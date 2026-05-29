@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rafael Montaner — Legal Operations Architect</title>
+<meta name="description" content="Licensed attorney and legal operations architect specialising in legal technology implementation, process automation, and AI governance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300;1,700&family=Syne:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#060810;
+  --deep:#0B0D17;
+  --surface:#111320;
+  --surface2:#161829;
+  --indigo:#4F6EF7;
+  --indigo-dim:rgba(79,110,247,0.12);
+  --indigo-glow:rgba(79,110,247,0.35);
+  --cyan:#00C9FF;
+  --cyan-dim:rgba(0,201,255,0.1);
+  --ice:#F0F4FF;
+  --ice-70:rgba(240,244,255,0.7);
+  --ice-30:rgba(240,244,255,0.3);
+  --slate:#6B7A99;
+  --slate2:#4A526E;
+  --border:rgba(79,110,247,0.18);
+  --border2:rgba(240,244,255,0.08);
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Syne',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);
+  color:var(--ice);
+  font-family:var(--sans);
+  font-weight:300;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor{
+  width:8px;height:8px;
+  background:var(--indigo);
+  border-radius:50%;
+  position:fixed;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.1s,background 0.2s;
+  mix-blend-mode:screen;
+}
+.cursor-ring{
+  width:32px;height:32px;
+  border:1px solid var(--indigo-glow);
+  border-radius:50%;
+  position:fixed;
+  pointer-events:none;
+  z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform 0.15s ease-out,width 0.3s,height 0.3s,border-color 0.3s;
+}
+
+/* ── PROGRESS BAR ── */
+#progress{
+  position:fixed;top:0;left:0;
+  height:1px;
+  background:linear-gradient(90deg,var(--indigo),var(--cyan));
+  width:0%;z-index:999;
+  transition:width 0.05s linear;
+}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  padding:1.5rem 4rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  transition:all 0.4s;
+}
+nav.scrolled{
+  background:rgba(6,8,16,0.88);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:1rem 4rem;
+}
+.nav-logo{
+  font-family:var(--serif);
+  font-size:1.15rem;
+  font-weight:700;
+  color:var(--ice);
+  text-decoration:none;
+  letter-spacing:-0.01em;
+}
+.nav-logo span{color:var(--indigo)}
+.nav-links{display:flex;gap:2.5rem;list-style:none;align-items:center}
+.nav-links a{
+  font-size:0.72rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--slate);
+  text-decoration:none;
+  transition:color 0.2s;
+  font-weight:500;
+}
+.nav-links a:hover{color:var(--indigo)}
+.nav-cta{
+  padding:0.5rem 1.25rem;
+  border:1px solid var(--border);
+  color:var(--ice)!important;
+  font-size:0.72rem!important;
+  letter-spacing:0.14em;
+  transition:border-color 0.2s,background 0.2s!important;
+}
+.nav-cta:hover{background:var(--indigo-dim)!important;border-color:var(--indigo)!important;color:var(--indigo)!important}
+
+/* Hamburger */
+.hamburger{
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  cursor:pointer;
+  padding:4px;
+  background:none;border:none;
+}
+.hamburger span{
+  display:block;width:22px;height:1px;
+  background:var(--ice);
+  transition:all 0.3s;
+}
+.hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mobile-menu{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(6,8,16,0.97);
+  backdrop-filter:blur(20px);
+  z-index:99;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2.5rem;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{
+  font-family:var(--serif);
+  font-size:2rem;
+  font-weight:700;
+  color:var(--ice-70);
+  text-decoration:none;
+  transition:color 0.2s;
+  letter-spacing:-0.02em;
+}
+.mobile-menu a:hover{color:var(--indigo)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+/* Parallax starfield bg */
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 60% 40%, rgba(79,110,247,0.08) 0%, transparent 60%),
+             radial-gradient(ellipse 50% 50% at 80% 20%, rgba(0,201,255,0.05) 0%, transparent 50%);
+}
+.hero-grid-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(79,110,247,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(79,110,247,0.05) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+.hero-grid-bg::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 100% at 0% 100%, var(--void) 0%, transparent 60%),
+             radial-gradient(ellipse 100% 50% at 100% 0%, transparent 50%, var(--void) 100%);
+}
+
+/* Parallax container */
+.parallax-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+/* Floating elements */
+.float-el{
+  position:absolute;
+  opacity:0;
+  transition:opacity 1.2s ease;
+  font-family:var(--mono);
+  font-size:0.7rem;
+  color:var(--indigo);
+  letter-spacing:0.08em;
+  border:1px solid rgba(79,110,247,0.2);
+  padding:0.4rem 0.75rem;
+  background:rgba(79,110,247,0.04);
+  white-space:nowrap;
+}
+.float-el.loaded{opacity:1}
+
+.float-scale{
+  position:absolute;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 1.5s ease;
+}
+.float-scale.loaded{opacity:1}
+
+/* Hero content */
+.hero-left{
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:9rem 4rem 6rem;
+  position:relative;z-index:2;
+}
+.hero-eyebrow{
+  font-size:0.68rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--indigo);
+  font-weight:500;
+  margin-bottom:2rem;
+  display:flex;align-items:center;gap:0.75rem;
+  opacity:0;transform:translateY(12px);
+  animation:fadeUp 0.6s 0.2s forwards;
+}
+.hero-eyebrow::before{
+  content:'';display:inline-block;
+  width:1.5rem;height:1px;background:var(--indigo);
+}
+h1.hero-name{
+  font-family:var(--serif);
+  font-size:clamp(3.2rem,6vw,5.5rem);
+  font-weight:900;
+  line-height:0.95;
+  letter-spacing:-0.03em;
+  color:var(--ice);
+  margin-bottom:0.5rem;
+  opacity:0;transform:translateY(16px);
+  animation:fadeUp 0.7s 0.35s forwards;
+}
+h1.hero-name em{font-style:italic;color:var(--indigo)}
+.hero-divider{
+  width:3rem;height:1px;
+  background:linear-gradient(90deg,var(--indigo),transparent);
+  margin:1.5rem 0;
+  opacity:0;animation:fadeUp 0.6s 0.5s forwards;
+}
+.hero-role{
+  font-size:clamp(0.85rem,1.5vw,1rem);
+  font-weight:400;
+  color:var(--slate);
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  margin-bottom:2rem;
+  opacity:0;animation:fadeUp 0.6s 0.55s forwards;
+}
+.hero-tagline{
+  font-family:var(--serif);
+  font-size:clamp(1.15rem,2.2vw,1.55rem);
+  font-weight:300;
+  font-style:italic;
+  color:var(--ice-70);
+  line-height:1.45;
+  max-width:36ch;
+  margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp 0.7s 0.65s forwards;
+}
+.hero-tagline strong{
+  color:var(--ice);
+  font-style:normal;
+  font-weight:700;
+}
+.hero-ctas{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  opacity:0;animation:fadeUp 0.6s 0.8s forwards;
+}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* Hero right — parallax stage */
+.hero-right{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* Central diagram in hero */
+.hero-diagram{
+  position:relative;z-index:2;
+  width:340px;
+  opacity:0;
+  animation:fadeIn 1.2s 1s forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+
+.hero-orbit{
+  position:relative;
+  width:280px;height:280px;
+  margin:auto;
+}
+.orbit-center{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:80px;height:80px;
+  border:1px solid var(--indigo);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--indigo-dim);
+}
+.orbit-center-text{
+  font-family:var(--serif);
+  font-size:0.8rem;
+  font-weight:700;
+  font-style:italic;
+  color:var(--indigo);
+  text-align:center;
+  line-height:1.2;
+}
+.orbit-ring{
+  position:absolute;
+  border:1px solid var(--border);
+  border-radius:50%;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
+.orbit-ring-1{width:160px;height:160px;animation:spin 20s linear infinite}
+.orbit-ring-2{width:260px;height:260px;animation:spin 35s linear infinite reverse;border-style:dashed}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+.orbit-node{
+  position:absolute;
+  width:36px;height:36px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.9rem;
+}
+
+/* Glow pulse */
+.glow-pulse{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:100px;height:100px;
+  border-radius:50%;
+  background:var(--indigo);
+  filter:blur(60px);
+  opacity:0.15;
+  animation:glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse{
+  0%,100%{opacity:0.12;transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:0.25;transform:translate(-50%,-50%) scale(1.3)}
+}
+
+/* Availability */
+.avail-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.72rem;
+  color:var(--slate);
+  letter-spacing:0.06em;
+  margin-top:2rem;
+  opacity:0;animation:fadeUp 0.6s 1s forwards;
+}
+.avail-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#4ade80;
+  box-shadow:0 0 6px rgba(74,222,128,0.6);
+  animation:dotPulse 2.5s infinite;
+}
+@keyframes dotPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.4)}
+  50%{box-shadow:0 0 0 5px rgba(74,222,128,0)}
+}
+
+/* ── BUTTONS ── */
+.btn-primary{
+  padding:0.85rem 2rem;
+  background:var(--indigo);
+  color:var(--ice);
+  font-family:var(--sans);font-size:0.72rem;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:background 0.2s,transform 0.2s,box-shadow 0.2s;
+  display:inline-block;
+}
+.btn-primary:hover{
+  background:#6480f9;
+  transform:translateY(-1px);
+  box-shadow:0 8px 30px rgba(79,110,247,0.35);
+}
+.btn-outline{
+  padding:0.85rem 2rem;
+  background:transparent;color:var(--ice-70);
+  font-family:var(--sans);font-size:0.72rem;font-weight:500;
+  letter-spacing:0.12em;text-transform:uppercase;
+  text-decoration:none;
+  border:1px solid var(--border2);cursor:pointer;
+  transition:border-color 0.2s,color 0.2s;
+  display:inline-block;
+}
+.btn-outline:hover{border-color:var(--indigo);color:var(--indigo)}
+
+/* ── SECTIONS ── */
+section{padding:8rem 4rem}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 4rem}
+.section-tag{
+  font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--indigo);font-weight:500;margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:0.75rem;
+}
+.section-tag::before{content:'';display:inline-block;width:1.5rem;height:1px;background:var(--indigo)}
+.section-h{
+  font-family:var(--serif);
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:700;line-height:1.1;
+  color:var(--ice);margin-bottom:1rem;
+}
+.section-h em{font-style:italic;color:var(--indigo)}
+.section-sub{font-size:0.95rem;color:var(--slate);max-width:54ch;line-height:1.85}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:0.1s}
+.reveal-d2{transition-delay:0.2s}
+.reveal-d3{transition-delay:0.3s}
+.reveal-d4{transition-delay:0.4s}
+
+/* ── POSITION ── */
+#position{background:var(--deep)}
+.position-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:6rem;align-items:center;
+}
+.position-statement{
+  font-family:var(--serif);
+  font-size:clamp(1.5rem,2.8vw,2.15rem);
+  font-weight:300;font-style:italic;
+  line-height:1.4;color:var(--ice);
+  position:relative;padding-left:1.5rem;
+}
+.position-statement::before{
+  content:'';position:absolute;left:0;top:0.3em;
+  width:3px;height:calc(100% - 0.6em);
+  background:linear-gradient(to bottom,var(--indigo),var(--cyan));
+}
+.position-statement strong{font-style:normal;font-weight:700;color:var(--cyan)}
+.position-body p{
+  font-size:0.9rem;color:var(--ice-70);line-height:1.9;margin-bottom:1.25rem;
+}
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2rem;margin-top:3rem;padding-top:3rem;
+  border-top:1px solid var(--border2);
+}
+.stat-n{
+  font-family:var(--serif);
+  font-size:2.6rem;font-weight:900;
+  color:var(--indigo);line-height:1;margin-bottom:0.4rem;
+}
+.stat-l{font-size:0.78rem;color:var(--slate);line-height:1.45;letter-spacing:0.02em}
+
+/* ── SERVICES ── */
+#services{background:var(--void)}
+.services-intro{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4rem;align-items:end;margin-bottom:5rem;
+}
+.svc-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--border);
+}
+.svc-card{
+  padding:2.25rem;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:background 0.35s;
+}
+.svc-card:nth-child(3),.svc-card:nth-child(6){border-right:none}
+.svc-card:nth-child(4),.svc-card:nth-child(5),.svc-card:nth-child(6){border-bottom:none}
+.svc-card::after{
+  content:'';position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,var(--indigo-dim),transparent);
+  opacity:0;transition:opacity 0.35s;
+}
+.svc-card:hover::after{opacity:1}
+.svc-num{
+  font-family:var(--mono);font-size:0.65rem;
+  color:var(--indigo);opacity:0.5;
+  margin-bottom:1.25rem;display:block;
+}
+.svc-title{
+  font-family:var(--serif);font-size:1.2rem;font-weight:700;
+  color:var(--ice);margin-bottom:0.6rem;line-height:1.2;
+  position:relative;z-index:1;
+}
+.svc-desc{
+  font-size:0.83rem;color:var(--slate);line-height:1.75;
+  position:relative;z-index:1;
+}
+
+/* ── FLOW DIAGRAM ── */
+#bridge{background:var(--deep);padding:8rem 4rem}
+.bridge-header{text-align:center;max-width:55ch;margin:0 auto 5rem}
+
+.flow-diagram{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  overflow-x:auto;
+  padding:2rem 0 3rem;
+}
+.flow-node{
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;flex-shrink:0;
+}
+.node-box{
+  width:140px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  padding:1.25rem 1rem;
+  text-align:center;
+  transition:border-color 0.3s,background 0.3s;
+  cursor:default;
+  position:relative;
+  z-index:1;
+}
+.node-box:hover{border-color:var(--indigo);background:var(--indigo-dim)}
+.node-icon{font-size:1.4rem;margin-bottom:0.5rem;display:block}
+.node-label{
+  font-family:var(--sans);font-size:0.72rem;font-weight:500;
+  color:var(--ice-70);line-height:1.3;letter-spacing:0.04em;
+}
+.node-sub{
+  font-family:var(--mono);font-size:0.6rem;
+  color:var(--indigo);margin-top:0.4rem;
+  opacity:0.7;
+}
+
+/* Arrow */
+.flow-arrow{
+  display:flex;align-items:center;
+  padding:0 0.75rem;flex-shrink:0;
+  position:relative;
+}
+.arrow-line{
+  width:48px;height:1px;
+  background:linear-gradient(90deg,var(--border),var(--indigo));
+  position:relative;
+}
+.arrow-line::after{
+  content:'';position:absolute;right:-1px;top:-3px;
+  width:0;height:0;
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  border-left:6px solid var(--indigo);
+}
+.arrow-label{
+  position:absolute;top:-1.5rem;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:0.58rem;
+  color:var(--slate);white-space:nowrap;letter-spacing:0.06em;
+}
+
+/* Node highlight — active */
+.node-active .node-box{
+  border-color:var(--indigo);
+  background:var(--indigo-dim);
+  box-shadow:0 0 24px rgba(79,110,247,0.2);
+}
+.node-active .node-label{color:var(--ice)}
+
+/* Skills two-column below diagram */
+.skills-cols{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2rem;margin-top:4rem;
+  border-top:1px solid var(--border2);padding-top:3rem;
+}
+.skills-col-label{
+  font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--cyan);font-weight:500;margin-bottom:1.25rem;
+}
+.skill-item{
+  display:flex;align-items:center;gap:0.75rem;
+  font-size:0.83rem;color:var(--ice-70);
+  padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.skill-item:last-child{border-bottom:none}
+.skill-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--indigo);flex-shrink:0;
+}
+
+.tech-chips{
+  display:flex;flex-wrap:wrap;gap:0.5rem;
+  margin-top:3rem;padding-top:2.5rem;
+  border-top:1px solid var(--border2);
+}
+.chip{
+  padding:0.35rem 0.85rem;
+  font-family:var(--mono);font-size:0.68rem;
+  color:var(--slate2);
+  border:1px solid var(--border);
+  letter-spacing:0.06em;
+  transition:border-color 0.2s,color 0.2s,background 0.2s;
+}
+.chip:hover{border-color:var(--indigo);color:var(--indigo);background:var(--indigo-dim)}
+.chip.hi{border-color:rgba(79,110,247,0.3);color:rgba(79,110,247,0.75)}
+
+/* ── EXPERIENCE ── */
+#experience{background:var(--void)}
+.exp-layout{display:grid;grid-template-columns:1fr 2fr;gap:6rem;align-items:start}
+.exp-sticky{position:sticky;top:8rem}
+.exp-item{
+  padding:2.25rem 0;
+  border-bottom:1px solid var(--border2);
+}
+.exp-item:first-child{border-top:1px solid var(--border2)}
+.exp-meta{
+  display:flex;align-items:baseline;justify-content:space-between;
+  flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem;
+}
+.exp-co{font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--indigo);font-weight:500}
+.exp-yr{font-family:var(--mono);font-size:0.7rem;color:var(--slate2)}
+.exp-role{
+  font-family:var(--serif);font-size:1.45rem;font-weight:700;
+  color:var(--ice);margin-bottom:1rem;line-height:1.2;
+}
+.exp-list{list-style:none;padding:0}
+.exp-list li{
+  font-size:0.83rem;color:var(--ice-70);
+  line-height:1.75;padding-left:1.25rem;position:relative;margin-bottom:0.3rem;
+}
+.exp-list li::before{content:'—';position:absolute;left:0;color:var(--indigo);opacity:0.5}
+.exp-tag{
+  display:inline-block;margin-top:0.75rem;
+  padding:0.2rem 0.65rem;
+  background:var(--indigo-dim);
+  border:1px solid var(--border);
+  font-family:var(--mono);font-size:0.65rem;
+  color:var(--indigo);letter-spacing:0.08em;
+}
+
+/* ── INTERNATIONAL ── */
+#international{background:var(--surface)}
+.intl-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:5rem;align-items:center;
+}
+.intl-flags{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem}
+.flag-item{
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.5rem 1rem;
+  border:1px solid var(--border2);
+  font-size:0.8rem;color:var(--ice-70);
+  transition:border-color 0.2s;
+}
+.flag-item:hover{border-color:var(--indigo)}
+.intl-list{margin-top:2rem;list-style:none}
+.intl-list li{
+  font-size:0.88rem;color:var(--ice-70);
+  padding:0.75rem 0;
+  border-bottom:1px solid var(--border2);
+  display:flex;gap:1rem;align-items:flex-start;
+}
+.intl-list li::before{content:'→';color:var(--indigo);flex-shrink:0}
+
+/* ── ACHIEVEMENTS ── */
+#achievements{
+  background:linear-gradient(135deg,var(--void) 0%,var(--surface) 100%);
+  position:relative;overflow:hidden;
+}
+#achievements::before{
+  content:'';position:absolute;top:-50%;right:-20%;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(var(--indigo-glow),transparent 70%);
+  opacity:0.15;pointer-events:none;
+}
+.ach-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;margin-top:4rem}
+.ach-card{
+  background:var(--surface2);
+  padding:2.5rem;
+  position:relative;overflow:hidden;
+  transition:background 0.3s;
+}
+.ach-card:hover{background:var(--surface)}
+.ach-card::before{
+  content:attr(data-n);
+  position:absolute;right:1.5rem;top:1rem;
+  font-family:var(--serif);font-size:5rem;font-weight:900;
+  color:var(--indigo);opacity:0.06;line-height:1;
+}
+.ach-icon{font-size:1.6rem;margin-bottom:1.25rem;display:block}
+.ach-title{
+  font-family:var(--serif);font-size:1.2rem;font-weight:700;
+  color:var(--ice);margin-bottom:0.5rem;line-height:1.25;
+}
+.ach-desc{font-size:0.83rem;color:var(--slate);line-height:1.75}
+.ach-pill{
+  display:inline-block;margin-top:1rem;
+  padding:0.25rem 0.75rem;
+  background:var(--indigo-dim);border:1px solid var(--border);
+  font-family:var(--mono);font-size:0.65rem;color:var(--indigo);
+  letter-spacing:0.08em;
+}
+
+/* ── CONTACT ── */
+#contact{background:var(--deep)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.contact-heading{
+  font-family:var(--serif);
+  font-size:clamp(2.5rem,5vw,4rem);
+  font-weight:900;line-height:0.95;
+  letter-spacing:-0.03em;
+  color:var(--ice);margin-bottom:1.5rem;
+}
+.contact-heading em{font-style:italic;color:var(--indigo)}
+.contact-intro{font-size:0.9rem;color:var(--slate);line-height:1.85;margin-bottom:2.5rem}
+.contact-direct{
+  display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2.5rem;
+}
+.contact-link{
+  display:flex;align-items:center;gap:0.75rem;
+  color:var(--ice-70);text-decoration:none;font-size:0.875rem;
+  transition:color 0.2s;padding-bottom:0.75rem;
+  border-bottom:1px solid var(--border2);
+}
+.contact-link:hover{color:var(--indigo)}
+.contact-link-label{
+  font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--slate2);font-weight:500;margin-bottom:0.1rem;
+  display:block;
+}
+
+/* Form */
+.contact-form{display:flex;flex-direction:column;gap:1.25rem}
+.form-field{display:flex;flex-direction:column;gap:0.4rem}
+.form-label{
+  font-size:0.65rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--slate);font-weight:500;
+}
+.form-input,.form-textarea{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  color:var(--ice);
+  font-family:var(--sans);font-size:0.875rem;font-weight:300;
+  padding:0.85rem 1rem;
+  outline:none;
+  transition:border-color 0.2s,background 0.2s;
+  width:100%;
+  resize:none;
+}
+.form-input:focus,.form-textarea:focus{
+  border-color:var(--indigo);
+  background:var(--indigo-dim);
+}
+.form-textarea{min-height:130px}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--slate2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.form-status{
+  font-size:0.8rem;color:var(--cyan);
+  display:none;padding:0.75rem 1rem;
+  background:var(--cyan-dim);border:1px solid rgba(0,201,255,0.2);
+}
+.form-status.show{display:block}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--void);
+  border-top:1px solid var(--border);
+  padding:3rem 4rem;
+}
+.footer-inner{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:2rem;
+}
+.footer-brand .nav-logo{font-size:1rem}
+.footer-brand p{
+  font-size:0.75rem;color:var(--slate2);margin-top:0.4rem;
+  letter-spacing:0.04em;
+}
+.footer-links{
+  display:flex;gap:2rem;list-style:none;
+}
+.footer-links a{
+  font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--slate2);text-decoration:none;
+  transition:color 0.2s;
+}
+.footer-links a:hover{color:var(--indigo)}
+.footer-right{
+  text-align:right;font-size:0.75rem;
+  color:var(--slate2);letter-spacing:0.04em;
+  line-height:1.6;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .hero-left{padding:9rem 3rem 5rem}
+  nav{padding:1.25rem 2rem}
+  nav.scrolled{padding:1rem 2rem}
+  section{padding:5rem 2rem}
+  .divider{margin:0 2rem}
+  #position .position-inner,
+  .services-intro,
+  .exp-layout,
+  .intl-inner,
+  .contact-grid{grid-template-columns:1fr;gap:3rem}
+  .exp-sticky{position:static}
+  .skills-cols{grid-template-columns:1fr}
+  .ach-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr;text-align:center}
+  .footer-right{text-align:center}
+  .footer-links{justify-content:center}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero-left{padding:8rem 1.5rem 4rem}
+  section{padding:4rem 1.5rem}
+  .divider{margin:0 1.5rem}
+  .svc-grid{grid-template-columns:1fr}
+  .svc-card{border-right:none!important}
+  .svc-card:nth-child(4),.svc-card:nth-child(5){border-bottom:1px solid var(--border)!important}
+  .stats-row{grid-template-columns:repeat(3,1fr);gap:1rem}
+  .flow-diagram{flex-direction:column;align-items:flex-start;gap:0;padding:1rem}
+  .flow-arrow{transform:rotate(90deg);padding:0.5rem 0;align-self:center}
+  .form-row{grid-template-columns:1fr}
+  nav{padding:1rem 1.5rem}
+  nav.scrolled{padding:0.85rem 1.5rem}
+  footer{padding:2rem 1.5rem}
+}
+@media(max-width:480px){
+  .hero-name{font-size:3rem}
+  .stats-row{grid-template-columns:1fr;gap:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#position" onclick="closeMobile()">About</a>
+  <a href="#services" onclick="closeMobile()">Services</a>
+  <a href="#bridge" onclick="closeMobile()">Capabilities</a>
+  <a href="#experience" onclick="closeMobile()">Experience</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+</div>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">R<span>.</span>Montaner</a>
+  <ul class="nav-links">
+    <li><a href="#position">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#bridge">Capabilities</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact" class="nav-cta">Let's talk</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+
+  <!-- Floating code elements (parallax) -->
+  <div class="parallax-layer" id="parallaxLayer">
+    <div class="float-el" style="top:18%;right:52%;font-size:0.65rem">{ legal.ops.automate() }</div>
+    <div class="float-el" style="top:72%;right:48%;font-size:0.65rem">RAG → production</div>
+    <div class="float-el" style="top:38%;right:8%;font-size:0.65rem">EU AI Act · GDPR</div>
+    <div class="float-el" style="top:85%;right:12%;font-size:0.65rem">if(legal) → build()</div>
+    <div class="float-el" style="top:55%;right:55%;font-size:0.65rem">BPMN · Agile · LPM</div>
+  </div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">Legal Operations Architect</div>
+    <h1 class="hero-name">
+      Rafael<br><em>Montaner</em>
+    </h1>
+    <div class="hero-divider"></div>
+    <div class="hero-role">Attorney · Legal Engineer · Process Architect</div>
+    <p class="hero-tagline">
+      <strong>An attorney who builds.</strong> Not a consultant who theorises —
+      someone who designs the system, writes the specification,
+      and owns the outcome from intake to production.
+    </p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn-primary">Get in touch</a>
+      <a href="#services" class="btn-outline">What I deliver</a>
+    </div>
+    <div class="avail-badge">
+      <span class="avail-dot"></span>
+      Open to new engagements · Remote &amp; Europe
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="glow-pulse"></div>
+    <div class="hero-diagram">
+      <div class="hero-orbit">
+        <!-- Rotating rings with nodes -->
+        <div class="orbit-ring orbit-ring-1">
+          <div class="orbit-node" style="top:-18px;left:50%;transform:translateX(-50%)">⚖️</div>
+          <div class="orbit-node" style="bottom:-18px;left:50%;transform:translateX(-50%)">🔧</div>
+        </div>
+        <div class="orbit-ring orbit-ring-2">
+          <div class="orbit-node" style="top:-18px;left:50%;transform:translateX(-50%)">🤖</div>
+          <div class="orbit-node" style="bottom:-18px;left:50%;transform:translateX(-50%)">📋</div>
+          <div class="orbit-node" style="top:50%;left:-18px;transform:translateY(-50%)">🛡️</div>
+          <div class="orbit-node" style="top:50%;right:-18px;transform:translateY(-50%)">📐</div>
+        </div>
+        <div class="orbit-center">
+          <div class="orbit-center-text">Legal<br>Ops</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ POSITION ═══════════════ -->
+<section id="position">
+  <div class="position-inner">
+    <div class="position-statement reveal">
+      Legal departments need people who can look at a broken process, design the fix,
+      and see it through — <strong>fluent in both the legal substance and the operational machinery.</strong>
+    </div>
+    <div class="position-body reveal reveal-d1">
+      <p>
+        I'm a licensed attorney with genuine technical depth — not someone who "understands" technology, but someone who has built production systems: automating legal workflows, architecting RAG deployments, and shipping full-stack legal applications across three countries.
+      </p>
+      <p>
+        That combination is rare. It means I can translate legal reality into engineering specifications that development teams can actually execute — and hold the quality bar on both sides.
+      </p>
+      <div class="stats-row">
+        <div>
+          <div class="stat-n">80%</div>
+          <div class="stat-l">Time reduction in succession matter processing — from 60 to 15 min, at Total Abogados</div>
+        </div>
+        <div>
+          <div class="stat-n">€10K</div>
+          <div class="stat-l">Prize — Concurso de Innovación Jurídica, Fundación Mutualidad de la Abogacía, Madrid 2025</div>
+        </div>
+        <div>
+          <div class="stat-n">3</div>
+          <div class="stat-l">Jurisdictions where I've shipped production legal software</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ SERVICES ═══════════════ -->
+<section id="services">
+  <div class="services-intro">
+    <div>
+      <p class="section-tag reveal">What I do</p>
+      <h2 class="section-h reveal">Services &amp;<br><em>Deliverables</em></h2>
+    </div>
+    <p class="section-sub reveal">
+      End-to-end legal operations — from strategy and architecture through to implementation, testing, and production deployment. I own the full cycle.
+    </p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card reveal">
+      <span class="svc-num">01</span>
+      <h3 class="svc-title">Legal Ops Strategy &amp; Transformation</h3>
+      <p class="svc-desc">Current-state assessment, technology roadmap, and prioritised implementation plan. From diagnosis to delivery-ready blueprint.</p>
+    </div>
+    <div class="svc-card reveal reveal-d1">
+      <span class="svc-num">02</span>
+      <h3 class="svc-title">Process Automation</h3>
+      <p class="svc-desc">Workflow design and full automation — document generation, intake systems, matter pipelines. Complete ownership: logic design to production deployment.</p>
+    </div>
+    <div class="svc-card reveal reveal-d2">
+      <span class="svc-num">03</span>
+      <h3 class="svc-title">AI &amp; RAG Implementation</h3>
+      <p class="svc-desc">Proprietary RAG architectures on client infrastructure. AI-powered legal workflows with full data sovereignty, GDPR compliance, and EU AI Act risk classification.</p>
+    </div>
+    <div class="svc-card reveal">
+      <span class="svc-num">04</span>
+      <h3 class="svc-title">Legal Product Management</h3>
+      <p class="svc-desc">Requirements definition, product scoping, stakeholder alignment, and Agile delivery of legal technology products — from concept to working software.</p>
+    </div>
+    <div class="svc-card reveal reveal-d1">
+      <span class="svc-num">05</span>
+      <h3 class="svc-title">AI Governance &amp; Regulatory Compliance</h3>
+      <p class="svc-desc">Operational frameworks for AI adoption: EU AI Act risk classification, GDPR requirements, tool selection criteria, and privacy-by-design for legal environments.</p>
+    </div>
+    <div class="svc-card reveal reveal-d2">
+      <span class="svc-num">06</span>
+      <h3 class="svc-title">Engineering Translation</h3>
+      <p class="svc-desc">Translating legal and operational requirements into engineering-ready specifications — BPMN diagrams, IF/THEN logic, and API blueprints for direct developer execution.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ BRIDGE / FLOW ═══════════════ -->
+<section id="bridge">
+  <div class="bridge-header reveal">
+    <p class="section-tag" style="justify-content:center">Technical capabilities</p>
+    <h2 class="section-h" style="text-align:center">The <em>bridge</em><br>between law and engineering</h2>
+    <p class="section-sub" style="margin:1rem auto 0;text-align:center">
+      Technical authority that lets me define what needs to be built, hold the quality bar, and ensure the outcome is legally sound.
+    </p>
+  </div>
+
+  <!-- Flow diagram -->
+  <div class="flow-diagram reveal">
+    <div class="flow-node">
+      <div class="node-box">
+        <span class="node-icon">⚖️</span>
+        <div class="node-label">Legal<br>Practice</div>
+        <div class="node-sub">Attorney · 8+ yrs</div>
+      </div>
+    </div>
+    <div class="flow-arrow">
+      <div class="arrow-line"><span class="arrow-label">maps to</span></div>
+    </div>
+    <div class="flow-node node-active">
+      <div class="node-box">
+        <span class="node-icon">📐</span>
+        <div class="node-label">Process<br>Design</div>
+        <div class="node-sub">BPMN · IF/THEN</div>
+      </div>
+    </div>
+    <div class="flow-arrow">
+      <div class="arrow-line"><span class="arrow-label">becomes</span></div>
+    </div>
+    <div class="flow-node node-active">
+      <div class="node-box">
+        <span class="node-icon">🔧</span>
+        <div class="node-label">Tech<br>Specification</div>
+        <div class="node-sub">APIs · Logic</div>
+      </div>
+    </div>
+    <div class="flow-arrow">
+      <div class="arrow-line"><span class="arrow-label">drives</span></div>
+    </div>
+    <div class="flow-node node-active">
+      <div class="node-box">
+        <span class="node-icon">🚀</span>
+        <div class="node-label">Build &amp;<br>Deploy</div>
+        <div class="node-sub">React · Python · RAG</div>
+      </div>
+    </div>
+    <div class="flow-arrow">
+      <div class="arrow-line"><span class="arrow-label">delivers</span></div>
+    </div>
+    <div class="flow-node">
+      <div class="node-box">
+        <span class="node-icon">📈</span>
+        <div class="node-label">Measurable<br>Outcome</div>
+        <div class="node-sub">Production · Live</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="skills-cols reveal">
+    <div>
+      <div class="skills-col-label">Legal &amp; Operations</div>
+      <div class="skill-item"><span class="skill-dot"></span>Workflow design &amp; BPMN modelling</div>
+      <div class="skill-item"><span class="skill-dot"></span>Legal process automation &amp; optimisation</div>
+      <div class="skill-item"><span class="skill-dot"></span>EU AI Act risk classification &amp; GDPR frameworks</div>
+      <div class="skill-item"><span class="skill-dot"></span>CLM, ELM &amp; KMS ecosystems</div>
+      <div class="skill-item"><span class="skill-dot"></span>Legal product management (Agile / Scrum)</div>
+      <div class="skill-item"><span class="skill-dot"></span>Stakeholder management &amp; change delivery</div>
+    </div>
+    <div>
+      <div class="skills-col-label">Technical Execution</div>
+      <div class="skill-item"><span class="skill-dot"></span>Full-stack development (React, Node.js, Java)</div>
+      <div class="skill-item"><span class="skill-dot"></span>RAG architecture &amp; LLM deployment</div>
+      <div class="skill-item"><span class="skill-dot"></span>Python, Django, PostgreSQL (bootcamp 2026)</div>
+      <div class="skill-item"><span class="skill-dot"></span>API integration &amp; automation pipelines</div>
+      <div class="skill-item"><span class="skill-dot"></span>IF/THEN logic &amp; engineering specification</div>
+      <div class="skill-item"><span class="skill-dot"></span>AWS · M365 · Jira · Confluence</div>
+    </div>
+  </div>
+
+  <div class="tech-chips reveal">
+    <span class="chip hi">Legal Ops</span>
+    <span class="chip hi">AI Governance</span>
+    <span class="chip hi">RAG</span>
+    <span class="chip hi">EU AI Act</span>
+    <span class="chip hi">GDPR</span>
+    <span class="chip">React</span>
+    <span class="chip">Node.js</span>
+    <span class="chip">Python</span>
+    <span class="chip">Django</span>
+    <span class="chip">PostgreSQL</span>
+    <span class="chip">Java</span>
+    <span class="chip">SQL</span>
+    <span class="chip">JavaScript</span>
+    <span class="chip">AWS</span>
+    <span class="chip">BPMN</span>
+    <span class="chip">Agile</span>
+    <span class="chip">Scrum</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ EXPERIENCE ═══════════════ -->
+<section id="experience">
+  <div class="exp-layout">
+    <div class="exp-sticky">
+      <p class="section-tag reveal">Track record</p>
+      <h2 class="section-h reveal">Where I've<br><em>delivered</em></h2>
+      <p class="section-sub reveal" style="margin-top:1rem">A career built at the intersection of legal practice, product design, and technical implementation.</p>
+    </div>
+    <div>
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <span class="exp-co">Independent · Remote</span>
+          <span class="exp-yr">2025 → Present</span>
+        </div>
+        <h3 class="exp-role">Legal Operations &amp; Legal Tech Consultant</h3>
+        <ul class="exp-list">
+          <li>Full RAG implementation design for a global FMCG corporation — technical architecture, EU AI Act compliance framework, GDPR requirements, and Scrum delivery plan.</li>
+          <li>Advisory on AI governance, tool selection, and privacy-by-design for corporate legal departments and law firms across Europe.</li>
+          <li>End-to-end legal technology implementation: assessment, roadmap, and hands-on deployment.</li>
+        </ul>
+        <span class="exp-tag">AI · RAG · EU AI Act · GDPR</span>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <span class="exp-co">WOW Legal Experience · Chile / Spain</span>
+          <span class="exp-yr">2023 → 2025</span>
+        </div>
+        <h3 class="exp-role">Legal Engineer</h3>
+        <ul class="exp-list">
+          <li>Designed and built <strong>Younomad</strong> — a legal settlement platform for digital nomads in Spain. The product won the Concurso de Innovación Jurídica 2025 (€10,000 prize) and was finalist in 2024.</li>
+          <li>Designed and developed <strong>Couple Council</strong> — a guided platform for Spanish family law with document automation and client-facing workflows.</li>
+          <li>Built full-stack legal applications in React and Node.js deployed across Chile, Argentina, and Spain.</li>
+        </ul>
+        <span class="exp-tag">React · Node.js · Legal Design · 3 jurisdictions</span>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <span class="exp-co">Total Abogados · Santiago</span>
+          <span class="exp-yr">2022 → 2023</span>
+        </div>
+        <h3 class="exp-role">Legal Process Automation &amp; Technology Lead</h3>
+        <ul class="exp-list">
+          <li>Automated the firm's intestate succession workflow — reducing processing time from 60 to 15 minutes per case (80% reduction) through complete workflow redesign and automation with EJS and real-time API integrations.</li>
+          <li>Automated the firm's full document production: court submissions, deeds, petitions, and procedural filings — 100% digital adoption.</li>
+          <li>Co-developed <strong>TAPP Legal</strong>, a B2B CLM platform for labour documentation, enabling client HR departments to manage employment contracts independently.</li>
+        </ul>
+        <span class="exp-tag">Automation · CLM · EJS · APIs</span>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-meta">
+          <span class="exp-co">Private Practice · Santiago</span>
+          <span class="exp-yr">2016 → 2021</span>
+        </div>
+        <h3 class="exp-role">Attorney</h3>
+        <ul class="exp-list">
+          <li>Trial representation across civil, commercial, labour, consumer, and administrative proceedings.</li>
+          <li>Legal counsel for SMEs on real estate transactions, contracts, and regulatory compliance.</li>
+          <li>Legal representation in collective bargaining negotiations for union organisations.</li>
+        </ul>
+        <span class="exp-tag">Litigation · Contracts · Labour Law</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ INTERNATIONAL ═══════════════ -->
+<section id="international">
+  <div class="intl-inner">
+    <div>
+      <p class="section-tag reveal">Global reach</p>
+      <h2 class="section-h reveal">Built for<br><em>international</em><br>environments</h2>
+      <div class="intl-flags reveal">
+        <div class="flag-item">🇨🇱 Chile</div>
+        <div class="flag-item">🇪🇸 Spain</div>
+        <div class="flag-item">🇦🇷 Argentina</div>
+        <div class="flag-item">🇵🇪 Peru</div>
+        <div class="flag-item">🇺🇸 USA</div>
+        <div class="flag-item">🇦🇹 Austria</div>
+      </div>
+    </div>
+    <div class="reveal reveal-d1">
+      <ul class="intl-list">
+        <li>Delivered legal technology projects across Chile, Argentina, Peru, and Spain — navigating different legal systems, regulatory frameworks, and stakeholder cultures in each.</li>
+        <li>Worked in multinational teams promoting legal process automation and plain language principles across jurisdictions with different legal traditions.</li>
+        <li>Represented at international legal technology forums and congresses, building relationships across the LATAM and European legal innovation community.</li>
+        <li>Full professional proficiency in English (C1) and professional working proficiency in Russian (B2) — enabling direct engagement with global and Eastern European teams.</li>
+        <li>Experience advising on GDPR and EU AI Act compliance — regulatory frameworks that require deep familiarity with the European legal and institutional context.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ ACHIEVEMENTS ═══════════════ -->
+<section id="achievements">
+  <p class="section-tag reveal">Recognition</p>
+  <h2 class="section-h reveal">Notable <em>achievements</em></h2>
+  <div class="ach-grid">
+    <div class="ach-card reveal" data-n="01">
+      <span class="ach-icon">🏆</span>
+      <h3 class="ach-title">Younomad — Innovation Award Winner</h3>
+      <p class="ach-desc">Younomad, a legal settlement platform for digital nomads in Spain — designed and built by me — won the Concurso de Innovación Jurídica 2025 (Fundación Mutualidad de la Abogacía, Madrid). €10,000 seed capital prize. The same product was finalist in the 2024 edition.</p>
+      <span class="ach-pill">Legal Product · Spain · 2025</span>
+    </div>
+    <div class="ach-card reveal reveal-d1" data-n="02">
+      <span class="ach-icon">⚡</span>
+      <h3 class="ach-title">80% Processing Time Reduction — Total Abogados</h3>
+      <p class="ach-desc">Redesigned and automated the intestate succession (posesión efectiva) workflow at Total Abogados — cutting processing time from 60 to 15 minutes per case through complete workflow automation, EJS templating, and real-time API integrations for legal calculations.</p>
+      <span class="ach-pill">Process Automation · Production · Chile · 2022–23</span>
+    </div>
+    <div class="ach-card reveal" data-n="03">
+      <span class="ach-icon">🌍</span>
+      <h3 class="ach-title">Production Software in Three Jurisdictions</h3>
+      <p class="ach-desc">Shipped production legal software deployed and actively used in Chile, Argentina, and Spain — covering different civil law traditions, regulatory requirements, and stakeholder contexts in each market.</p>
+      <span class="ach-pill">Full-stack · Cross-jurisdictional · 2023–25</span>
+    </div>
+    <div class="ach-card reveal reveal-d1" data-n="04">
+      <span class="ach-icon">🤖</span>
+      <h3 class="ach-title">RAG Architecture for Global FMCG</h3>
+      <p class="ach-desc">Delivered a full RAG implementation design for a global FMCG corporation — covering technical architecture, model selection, EU AI Act compliance framework, GDPR requirements, and a complete Scrum delivery plan including UAT governance.</p>
+      <span class="ach-pill">AI · GDPR · EU AI Act · Enterprise · 2025</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<section id="contact">
+  <div class="contact-grid">
+    <div>
+      <p class="section-tag reveal">Get in touch</p>
+      <h2 class="contact-heading reveal">
+        Let's build<br>something<br><em>that works.</em>
+      </h2>
+      <p class="contact-intro reveal">
+        Available for legal operations roles, advisory engagements, and consulting projects. Open to remote and in-person engagements across Europe and Latin America.
+      </p>
+      <div class="contact-direct reveal">
+        <a href="mailto:rafael.montaner@gmail.com" class="contact-link">
+          <div>
+            <span class="contact-link-label">Email</span>
+            rafael.montaner@gmail.com
+          </div>
+        </a>
+        <a href="https://linkedin.com/in/rafaelmontaner" class="contact-link" target="_blank">
+          <div>
+            <span class="contact-link-label">LinkedIn</span>
+            linkedin.com/in/rafaelmontaner
+          </div>
+        </a>
+        <a href="tel:+56945360692" class="contact-link">
+          <div>
+            <span class="contact-link-label">Phone</span>
+            +56 9 4536 0692
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="reveal reveal-d1">
+      <!-- Replace YOUR_FORM_ID with your Formspree form ID -->
+      <form class="contact-form" id="contactForm">
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-input" name="name" placeholder="Your name" required>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Company</label>
+            <input type="text" class="form-input" name="company" placeholder="Organisation">
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" name="email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-input" name="subject" placeholder="How can I help?">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" name="message" placeholder="Tell me about your project or role..." required></textarea>
+        </div>
+        <div class="form-status" id="formStatus">
+          ✓ Message sent — I'll get back to you shortly.
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;text-align:center;border:none;cursor:pointer">
+          Send message →
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">R<span>.</span>Montaner</a>
+      <p>Legal Operations Architect</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#position">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="footer-right">
+      <p>© 2026 Rafael Montaner Robles</p>
+      <p>Santiago · Europe · Remote</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Custom cursor
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+function animateRing(){
+  rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+document.querySelectorAll('a,button,.svc-card,.ach-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    ring.style.width='48px';ring.style.height='48px';
+    ring.style.borderColor='rgba(79,110,247,0.6)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    ring.style.width='32px';ring.style.height='32px';
+    ring.style.borderColor='rgba(79,110,247,0.3)';
+  });
+});
+
+// ── Progress bar
+window.addEventListener('scroll',()=>{
+  const d=document.documentElement;
+  const pct=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;
+  document.getElementById('progress').style.width=pct+'%';
+});
+
+// ── Nav scroll
+const nav=document.getElementById('navbar');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+
+// ── Hamburger
+const ham=document.getElementById('hamburger');
+const mob=document.getElementById('mobileMenu');
+ham.addEventListener('click',()=>{
+  ham.classList.toggle('open');
+  mob.classList.toggle('open');
+});
+function closeMobile(){
+  ham.classList.remove('open');mob.classList.remove('open');
+}
+
+// ── Scroll reveal
+const revEls=document.querySelectorAll('.reveal');
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');revObs.unobserve(e.target)}
+  });
+},{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
+revEls.forEach(el=>revObs.observe(el));
+
+// ── Parallax on hero
+const parallaxEl=document.getElementById('parallaxLayer');
+const heroEl=document.getElementById('hero');
+window.addEventListener('scroll',()=>{
+  const scrolled=window.scrollY;
+  if(scrolled<window.innerHeight){
+    parallaxEl.style.transform=`translateY(${scrolled*0.3}px)`;
+  }
+});
+
+// ── Animate float elements on load
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.float-el').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('loaded'),800+i*200);
+  });
+});
+
+// ── Contact form (Formspree)
+document.getElementById('contactForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=this.querySelector('button[type=submit]');
+  btn.textContent='Sending...';btn.disabled=true;
+  
+  // To connect to Formspree: replace URL below with https://formspree.io/f/YOUR_FORM_ID
+  // For now, simulate success
+  await new Promise(r=>setTimeout(r,1200));
+  
+  document.getElementById('formStatus').classList.add('show');
+  this.reset();
+  btn.textContent='Send message →';btn.disabled=false;
+  
+  /* Uncomment and add your Formspree ID to activate:
+  try {
+    const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      method:'POST', headers:{'Accept':'application/json'},
+      body: new FormData(this)
+    });
+    if(res.ok){
+      document.getElementById('formStatus').classList.add('show');
+      this.reset();
+    }
+  } catch(err){ console.error(err); }
+  btn.textContent='Send message →'; btn.disabled=false;
+  */
+});
+</script>
+</body>
+</html>
