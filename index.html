@@ -32,7 +32,7 @@
   --sans:'Syne',system-ui,sans-serif;
   --mono:'JetBrains Mono',monospace;
 }
-html{scroll-behavior:smooth}
+html{scroll-behavior:auto}
 body{
   background:var(--void);
   color:var(--ice);
@@ -40,6 +40,18 @@ body{
   font-weight:300;
   line-height:1.7;
   overflow-x:hidden;
+  position:relative;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── CUSTOM CURSOR ── */
@@ -172,7 +184,6 @@ nav.scrolled{
   max-width:100%;
 }
 
-/* Parallax starfield bg */
 .hero-bg{
   position:absolute;inset:0;
   background:radial-gradient(ellipse 80% 80% at 60% 40%, rgba(79,110,247,0.08) 0%, transparent 60%),
@@ -191,14 +202,12 @@ nav.scrolled{
              radial-gradient(ellipse 100% 50% at 100% 0%, transparent 50%, var(--void) 100%);
 }
 
-/* Parallax container */
 .parallax-layer{
   position:absolute;
   inset:0;
   pointer-events:none;
 }
 
-/* Floating elements */
 .float-el{
   position:absolute;
   opacity:0;
@@ -214,15 +223,6 @@ nav.scrolled{
 }
 .float-el.loaded{opacity:1}
 
-.float-scale{
-  position:absolute;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity 1.5s ease;
-}
-.float-scale.loaded{opacity:1}
-
-/* Hero content */
 .hero-left{
   display:flex;flex-direction:column;
   justify-content:center;
@@ -273,12 +273,12 @@ h1.hero-name em{font-style:italic;color:var(--indigo)}
 }
 .hero-tagline{
   font-family:var(--serif);
-  font-size:clamp(1.15rem,2.2vw,1.55rem);
+  font-size:clamp(1.3rem,2.5vw,1.75rem);
   font-weight:300;
   font-style:italic;
   color:var(--ice-70);
   line-height:1.45;
-  max-width:36ch;
+  max-width:28ch;
   margin-bottom:2.5rem;
   opacity:0;animation:fadeUp 0.7s 0.65s forwards;
 }
@@ -293,76 +293,111 @@ h1.hero-name em{font-style:italic;color:var(--indigo)}
 }
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 
-/* Hero right — parallax stage */
 .hero-right{
   position:relative;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;
 }
 
-/* Central diagram in hero */
+/* Technical diagram */
 .hero-diagram{
   position:relative;z-index:2;
-  width:340px;
+  width:400px;
+  height:400px;
   opacity:0;
   animation:fadeIn 1.2s 1s forwards;
 }
 @keyframes fadeIn{to{opacity:1}}
 
-.hero-orbit{
+.tech-diagram{
+  width:100%;
+  height:100%;
   position:relative;
-  width:280px;height:280px;
-  margin:auto;
 }
-.orbit-center{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:80px;height:80px;
-  border:1px solid var(--indigo);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--indigo-dim);
-}
-.orbit-center-text{
-  font-family:var(--serif);
-  font-size:0.8rem;
-  font-weight:700;
-  font-style:italic;
-  color:var(--indigo);
-  text-align:center;
-  line-height:1.2;
-}
-.orbit-ring{
-  position:absolute;
-  border:1px solid var(--border);
-  border-radius:50%;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-}
-.orbit-ring-1{width:160px;height:160px;animation:spin 20s linear infinite}
-.orbit-ring-2{width:260px;height:260px;animation:spin 35s linear infinite reverse;border-style:dashed}
-@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
-.orbit-node{
+.tech-node{
   position:absolute;
-  width:36px;height:36px;
-  border-radius:50%;
+  width:80px;
+  height:80px;
   border:1px solid var(--border);
   background:var(--surface);
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.9rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.3s;
+}
+.tech-node:hover{
+  border-color:var(--indigo);
+  background:var(--indigo-dim);
+  transform:translateY(-4px);
+}
+.tech-node svg{
+  width:24px;
+  height:24px;
+  stroke:var(--indigo);
+  margin-bottom:0.5rem;
+}
+.tech-node-label{
+  font-family:var(--mono);
+  font-size:0.6rem;
+  color:var(--ice-70);
+  letter-spacing:0.05em;
 }
 
-/* Glow pulse */
+.tech-node-1{top:10%;left:50%;transform:translateX(-50%)}
+.tech-node-2{top:50%;right:5%;transform:translateY(-50%)}
+.tech-node-3{bottom:10%;left:50%;transform:translateX(-50%)}
+.tech-node-4{top:50%;left:5%;transform:translateY(-50%)}
+
+.tech-center{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:120px;
+  height:120px;
+  border:1px solid var(--indigo);
+  background:var(--indigo-dim);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.tech-center-text{
+  font-family:var(--serif);
+  font-size:0.9rem;
+  font-weight:700;
+  color:var(--indigo);
+  text-align:center;
+  line-height:1.3;
+}
+.tech-center-sub{
+  font-family:var(--mono);
+  font-size:0.55rem;
+  color:var(--slate);
+  margin-top:0.25rem;
+  letter-spacing:0.1em;
+}
+
+.tech-line{
+  position:absolute;
+  background:linear-gradient(90deg,var(--border),var(--indigo),var(--border));
+  height:1px;
+  opacity:0.3;
+}
+.tech-line-h{width:100px;top:50%;left:calc(50% - 140px)}
+.tech-line-h2{width:100px;top:50%;right:calc(50% - 140px)}
+.tech-line-v{width:1px;height:100px;left:50%;top:calc(50% - 140px)}
+.tech-line-v2{width:1px;height:100px;left:50%;bottom:calc(50% - 140px)}
+
 .glow-pulse{
   position:absolute;
   top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:100px;height:100px;
+  width:150px;height:150px;
   border-radius:50%;
   background:var(--indigo);
-  filter:blur(60px);
+  filter:blur(80px);
   opacity:0.15;
   animation:glowPulse 4s ease-in-out infinite;
 }
@@ -371,7 +406,6 @@ h1.hero-name em{font-style:italic;color:var(--indigo)}
   50%{opacity:0.25;transform:translate(-50%,-50%) scale(1.3)}
 }
 
-/* Availability */
 .avail-badge{
   display:inline-flex;align-items:center;gap:0.5rem;
   font-size:0.72rem;
@@ -391,6 +425,29 @@ h1.hero-name em{font-style:italic;color:var(--indigo)}
   50%{box-shadow:0 0 0 5px rgba(74,222,128,0)}
 }
 
+/* ── MARQUEE ── */
+.marquee{
+  overflow:hidden;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:1.25rem 0;
+  background:var(--deep);
+}
+.marquee-track{
+  display:flex;
+  gap:4rem;
+  animation:marquee 40s linear infinite;
+  white-space:nowrap;
+  font-family:var(--mono);
+  font-size:0.75rem;
+  letter-spacing:0.2em;
+  color:var(--slate);
+  text-transform:uppercase;
+}
+@keyframes marquee{
+  to{transform:translateX(-50%)}
+}
+
 /* ── BUTTONS ── */
 .btn-primary{
   padding:0.85rem 2rem;
@@ -399,12 +456,11 @@ h1.hero-name em{font-style:italic;color:var(--indigo)}
   font-family:var(--sans);font-size:0.72rem;font-weight:500;
   letter-spacing:0.12em;text-transform:uppercase;
   text-decoration:none;border:none;cursor:pointer;
-  transition:background 0.2s,transform 0.2s,box-shadow 0.2s;
+  transition:background 0.2s,transform 0.3s cubic-bezier(0.2,1,0.3,1),box-shadow 0.2s;
   display:inline-block;
 }
 .btn-primary:hover{
   background:#6480f9;
-  transform:translateY(-1px);
   box-shadow:0 8px 30px rgba(79,110,247,0.35);
 }
 .btn-outline{
@@ -414,7 +470,7 @@ h1.hero-name em{font-style:italic;color:var(--indigo)}
   letter-spacing:0.12em;text-transform:uppercase;
   text-decoration:none;
   border:1px solid var(--border2);cursor:pointer;
-  transition:border-color 0.2s,color 0.2s;
+  transition:border-color 0.2s,color 0.2s,transform 0.3s cubic-bezier(0.2,1,0.3,1);
   display:inline-block;
 }
 .btn-outline:hover{border-color:var(--indigo);color:var(--indigo)}
@@ -512,6 +568,14 @@ section{
   color:var(--indigo);opacity:0.5;
   margin-bottom:1.25rem;display:block;
 }
+.svc-icon{
+  width:32px;
+  height:32px;
+  stroke:var(--indigo);
+  margin-bottom:1rem;
+  position:relative;
+  z-index:1;
+}
 .svc-title{
   font-family:var(--serif);font-size:1.2rem;font-weight:700;
   color:var(--ice);margin-bottom:0.6rem;line-height:1.2;
@@ -551,7 +615,13 @@ section{
   z-index:1;
 }
 .node-box:hover{border-color:var(--indigo);background:var(--indigo-dim)}
-.node-icon{font-size:1.4rem;margin-bottom:0.5rem;display:block}
+.node-icon{
+  width:28px;
+  height:28px;
+  stroke:var(--indigo);
+  margin:0 auto 0.5rem;
+  display:block;
+}
 .node-label{
   font-family:var(--sans);font-size:0.72rem;font-weight:500;
   color:var(--ice-70);line-height:1.3;letter-spacing:0.04em;
@@ -562,7 +632,6 @@ section{
   opacity:0.7;
 }
 
-/* Arrow */
 .flow-arrow{
   display:flex;align-items:center;
   padding:0 0.75rem;flex-shrink:0;
@@ -586,7 +655,6 @@ section{
   color:var(--slate);white-space:nowrap;letter-spacing:0.06em;
 }
 
-/* Node highlight — active */
 .node-active .node-box{
   border-color:var(--indigo);
   background:var(--indigo-dim);
@@ -594,7 +662,6 @@ section{
 }
 .node-active .node-label{color:var(--ice)}
 
-/* Skills two-column below diagram */
 .skills-cols{
   display:grid;grid-template-columns:1fr 1fr;
   gap:2rem;margin-top:4rem;
@@ -671,15 +738,26 @@ section{
   display:grid;grid-template-columns:1fr 1fr;
   gap:5rem;align-items:center;
 }
-.intl-flags{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2rem}
-.flag-item{
-  display:flex;align-items:center;gap:0.5rem;
-  padding:0.5rem 1rem;
-  border:1px solid var(--border2);
-  font-size:0.8rem;color:var(--ice-70);
-  transition:border-color 0.2s;
+.intl-locations{
+  display:flex;
+  flex-wrap:wrap;
+  gap:1rem;
+  margin-top:2rem;
 }
-.flag-item:hover{border-color:var(--indigo)}
+.location-item{
+  padding:0.75rem 1.25rem;
+  border:1px solid var(--border2);
+  font-family:var(--mono);
+  font-size:0.75rem;
+  color:var(--ice-70);
+  letter-spacing:0.05em;
+  transition:all 0.2s;
+}
+.location-item:hover{
+  border-color:var(--indigo);
+  color:var(--indigo);
+  background:var(--indigo-dim);
+}
 .intl-list{margin-top:2rem;list-style:none}
 .intl-list li{
   font-size:0.88rem;color:var(--ice-70);
@@ -714,7 +792,13 @@ section{
   font-family:var(--serif);font-size:5rem;font-weight:900;
   color:var(--indigo);opacity:0.06;line-height:1;
 }
-.ach-icon{font-size:1.6rem;margin-bottom:1.25rem;display:block}
+.ach-icon{
+  width:32px;
+  height:32px;
+  stroke:var(--indigo);
+  margin-bottom:1.25rem;
+  display:block;
+}
 .ach-title{
   font-family:var(--serif);font-size:1.2rem;font-weight:700;
   color:var(--ice);margin-bottom:0.5rem;line-height:1.25;
@@ -756,7 +840,6 @@ section{
   display:block;
 }
 
-/* Form */
 .contact-form{display:flex;flex-direction:column;gap:1.25rem}
 .form-field{display:flex;flex-direction:column;gap:0.4rem}
 .form-label{
@@ -868,7 +951,6 @@ footer{
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- Mobile Menu -->
 <div class="mobile-menu" id="mobileMenu">
   <a href="#position" onclick="closeMobile()">About</a>
   <a href="#services" onclick="closeMobile()">Services</a>
@@ -891,12 +973,10 @@ footer{
   </button>
 </nav>
 
-<!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero" id="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid-bg"></div>
 
-  <!-- Floating code elements (parallax) -->
   <div class="parallax-layer" id="parallaxLayer">
     <div class="float-el" style="top:18%;right:52%;font-size:0.65rem">{ legal.ops.automate() }</div>
     <div class="float-el" style="top:72%;right:48%;font-size:0.65rem">RAG → production</div>
@@ -913,9 +993,7 @@ footer{
     <div class="hero-divider"></div>
     <div class="hero-role">Attorney · Legal Engineer · Process Architect</div>
     <p class="hero-tagline">
-      <strong>An attorney who builds.</strong> Not a consultant who theorises —
-      someone who designs the system, writes the specification,
-      and owns the outcome from intake to production.
+      <strong>I build the systems</strong><br>lawyers theorise about.
     </p>
     <div class="hero-ctas">
       <a href="#contact" class="btn-primary">Get in touch</a>
@@ -930,29 +1008,70 @@ footer{
   <div class="hero-right">
     <div class="glow-pulse"></div>
     <div class="hero-diagram">
-      <div class="hero-orbit">
-        <!-- Rotating rings with nodes -->
-        <div class="orbit-ring orbit-ring-1">
-          <div class="orbit-node" style="top:-18px;left:50%;transform:translateX(-50%)">⚖️</div>
-          <div class="orbit-node" style="bottom:-18px;left:50%;transform:translateX(-50%)">🔧</div>
+      <div class="tech-diagram">
+        <div class="tech-line tech-line-h"></div>
+        <div class="tech-line tech-line-h2"></div>
+        <div class="tech-line tech-line-v"></div>
+        <div class="tech-line tech-line-v2"></div>
+        
+        <div class="tech-node tech-node-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <div class="tech-node-label">RAG</div>
         </div>
-        <div class="orbit-ring orbit-ring-2">
-          <div class="orbit-node" style="top:-18px;left:50%;transform:translateX(-50%)">🤖</div>
-          <div class="orbit-node" style="bottom:-18px;left:50%;transform:translateX(-50%)">📋</div>
-          <div class="orbit-node" style="top:50%;left:-18px;transform:translateY(-50%)">🛡️</div>
-          <div class="orbit-node" style="top:50%;right:-18px;transform:translateY(-50%)">📐</div>
+        
+        <div class="tech-node tech-node-2">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div class="tech-node-label">GDPR</div>
         </div>
-        <div class="orbit-center">
-          <div class="orbit-center-text">Legal<br>Ops</div>
+        
+        <div class="tech-node tech-node-3">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <div class="tech-node-label">BPMN</div>
+        </div>
+        
+        <div class="tech-node tech-node-4">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+          </svg>
+          <div class="tech-node-label">API</div>
+        </div>
+        
+        <div class="tech-center">
+          <div class="tech-center-text">Legal<br>Ops</div>
+          <div class="tech-center-sub">ARCHITECTURE</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
+<div class="marquee">
+  <div class="marquee-track">
+    <span>LEGAL OPS</span>
+    <span>RAG ARCHITECTURE</span>
+    <span>EU AI ACT</span>
+    <span>PROCESS AUTOMATION</span>
+    <span>CLM</span>
+    <span>BPMN</span>
+    <span>GDPR</span>
+    <span>LEGAL ENGINEERING</span>
+    <span>LEGAL OPS</span>
+    <span>RAG ARCHITECTURE</span>
+    <span>EU AI ACT</span>
+    <span>PROCESS AUTOMATION</span>
+    <span>CLM</span>
+    <span>BPMN</span>
+    <span>GDPR</span>
+    <span>LEGAL ENGINEERING</span>
+  </div>
+</div>
 
-<!-- ═══════════════ POSITION ═══════════════ -->
 <section id="position">
   <div class="position-inner">
     <div class="position-statement reveal">
@@ -968,15 +1087,15 @@ footer{
       </p>
       <div class="stats-row">
         <div>
-          <div class="stat-n">80%</div>
+          <div class="stat-n" data-target="80" data-suffix="%">0%</div>
           <div class="stat-l">Time reduction in succession matter processing — from 60 to 15 min, at Total Abogados</div>
         </div>
         <div>
-          <div class="stat-n">€10K</div>
+          <div class="stat-n" data-target="10" data-prefix="€" data-suffix="K">€0K</div>
           <div class="stat-l">Prize — Concurso de Innovación Jurídica, Fundación Mutualidad de la Abogacía, Madrid 2025</div>
         </div>
         <div>
-          <div class="stat-n">3</div>
+          <div class="stat-n" data-target="3">0</div>
           <div class="stat-l">Jurisdictions where I've shipped production legal software</div>
         </div>
       </div>
@@ -986,7 +1105,6 @@ footer{
 
 <div class="divider"></div>
 
-<!-- ═══════════════ SERVICES ═══════════════ -->
 <section id="services">
   <div class="services-intro">
     <div>
@@ -1000,31 +1118,49 @@ footer{
   <div class="svc-grid">
     <div class="svc-card reveal">
       <span class="svc-num">01</span>
+      <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
       <h3 class="svc-title">Legal Ops Strategy &amp; Transformation</h3>
       <p class="svc-desc">Current-state assessment, technology roadmap, and prioritised implementation plan. From diagnosis to delivery-ready blueprint.</p>
     </div>
     <div class="svc-card reveal reveal-d1">
       <span class="svc-num">02</span>
+      <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
       <h3 class="svc-title">Process Automation</h3>
       <p class="svc-desc">Workflow design and full automation — document generation, intake systems, matter pipelines. Complete ownership: logic design to production deployment.</p>
     </div>
     <div class="svc-card reveal reveal-d2">
       <span class="svc-num">03</span>
+      <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+      </svg>
       <h3 class="svc-title">AI &amp; RAG Implementation</h3>
       <p class="svc-desc">Proprietary RAG architectures on client infrastructure. AI-powered legal workflows with full data sovereignty, GDPR compliance, and EU AI Act risk classification.</p>
     </div>
     <div class="svc-card reveal">
       <span class="svc-num">04</span>
+      <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+      </svg>
       <h3 class="svc-title">Legal Product Management</h3>
       <p class="svc-desc">Requirements definition, product scoping, stakeholder alignment, and Agile delivery of legal technology products — from concept to working software.</p>
     </div>
     <div class="svc-card reveal reveal-d1">
       <span class="svc-num">05</span>
+      <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+      </svg>
       <h3 class="svc-title">AI Governance &amp; Regulatory Compliance</h3>
       <p class="svc-desc">Operational frameworks for AI adoption: EU AI Act risk classification, GDPR requirements, tool selection criteria, and privacy-by-design for legal environments.</p>
     </div>
     <div class="svc-card reveal reveal-d2">
       <span class="svc-num">06</span>
+      <svg class="svc-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+      </svg>
       <h3 class="svc-title">Engineering Translation</h3>
       <p class="svc-desc">Translating legal and operational requirements into engineering-ready specifications — BPMN diagrams, IF/THEN logic, and API blueprints for direct developer execution.</p>
     </div>
@@ -1033,7 +1169,6 @@ footer{
 
 <div class="divider"></div>
 
-<!-- ═══════════════ BRIDGE / FLOW ═══════════════ -->
 <section id="bridge">
   <div class="bridge-header reveal">
     <p class="section-tag" style="justify-content:center">Technical capabilities</p>
@@ -1043,11 +1178,12 @@ footer{
     </p>
   </div>
 
-  <!-- Flow diagram -->
   <div class="flow-diagram reveal">
     <div class="flow-node">
       <div class="node-box">
-        <span class="node-icon">⚖️</span>
+        <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+        </svg>
         <div class="node-label">Legal<br>Practice</div>
         <div class="node-sub">Attorney · 8+ yrs</div>
       </div>
@@ -1057,7 +1193,9 @@ footer{
     </div>
     <div class="flow-node node-active">
       <div class="node-box">
-        <span class="node-icon">📐</span>
+        <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+        </svg>
         <div class="node-label">Process<br>Design</div>
         <div class="node-sub">BPMN · IF/THEN</div>
       </div>
@@ -1067,7 +1205,10 @@ footer{
     </div>
     <div class="flow-node node-active">
       <div class="node-box">
-        <span class="node-icon">🔧</span>
+        <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
         <div class="node-label">Tech<br>Specification</div>
         <div class="node-sub">APIs · Logic</div>
       </div>
@@ -1077,7 +1218,9 @@ footer{
     </div>
     <div class="flow-node node-active">
       <div class="node-box">
-        <span class="node-icon">🚀</span>
+        <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
         <div class="node-label">Build &amp;<br>Deploy</div>
         <div class="node-sub">React · Python · RAG</div>
       </div>
@@ -1087,7 +1230,9 @@ footer{
     </div>
     <div class="flow-node">
       <div class="node-box">
-        <span class="node-icon">📈</span>
+        <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
         <div class="node-label">Measurable<br>Outcome</div>
         <div class="node-sub">Production · Live</div>
       </div>
@@ -1138,7 +1283,6 @@ footer{
 
 <div class="divider"></div>
 
-<!-- ═══════════════ EXPERIENCE ═══════════════ -->
 <section id="experience">
   <div class="exp-layout">
     <div class="exp-sticky">
@@ -1205,19 +1349,17 @@ footer{
 
 <div class="divider"></div>
 
-<!-- ═══════════════ INTERNATIONAL ═══════════════ -->
 <section id="international">
   <div class="intl-inner">
     <div>
       <p class="section-tag reveal">Global reach</p>
       <h2 class="section-h reveal">Built for<br><em>international</em><br>environments</h2>
-      <div class="intl-flags reveal">
-        <div class="flag-item">🇨🇱 Chile</div>
-        <div class="flag-item">🇪🇸 Spain</div>
-        <div class="flag-item">🇦🇷 Argentina</div>
-        <div class="flag-item">🇵🇪 Peru</div>
-        <div class="flag-item">🇺🇸 USA</div>
-        <div class="flag-item">🇦🇹 Austria</div>
+      <div class="intl-locations reveal">
+        <div class="location-item">Santiago</div>
+        <div class="location-item">Madrid</div>
+        <div class="location-item">Buenos Aires</div>
+        <div class="location-item">Lima</div>
+        <div class="location-item">Remote · EU</div>
       </div>
     </div>
     <div class="reveal reveal-d1">
@@ -1234,31 +1376,38 @@ footer{
 
 <div class="divider"></div>
 
-<!-- ═══════════════ ACHIEVEMENTS ═══════════════ -->
 <section id="achievements">
   <p class="section-tag reveal">Recognition</p>
   <h2 class="section-h reveal">Notable <em>achievements</em></h2>
   <div class="ach-grid">
     <div class="ach-card reveal" data-n="01">
-      <span class="ach-icon">🏆</span>
+      <svg class="ach-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+      </svg>
       <h3 class="ach-title">Younomad — Innovation Award Winner</h3>
       <p class="ach-desc">Younomad, a legal settlement platform for digital nomads in Spain — designed and built by me — won the Concurso de Innovación Jurídica 2025 (Fundación Mutualidad de la Abogacía, Madrid). €10,000 seed capital prize. The same product was finalist in the 2024 edition.</p>
       <span class="ach-pill">Legal Product · Spain · 2025</span>
     </div>
     <div class="ach-card reveal reveal-d1" data-n="02">
-      <span class="ach-icon">⚡</span>
+      <svg class="ach-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
       <h3 class="ach-title">80% Processing Time Reduction — Total Abogados</h3>
       <p class="ach-desc">Redesigned and automated the intestate succession (posesión efectiva) workflow at Total Abogados — cutting processing time from 60 to 15 minutes per case through complete workflow automation, EJS templating, and real-time API integrations for legal calculations.</p>
       <span class="ach-pill">Process Automation · Production · Chile · 2022–23</span>
     </div>
     <div class="ach-card reveal" data-n="03">
-      <span class="ach-icon">🌍</span>
+      <svg class="ach-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
       <h3 class="ach-title">Production Software in Three Jurisdictions</h3>
       <p class="ach-desc">Shipped production legal software deployed and actively used in Chile, Argentina, and Spain — covering different civil law traditions, regulatory requirements, and stakeholder contexts in each market.</p>
       <span class="ach-pill">Full-stack · Cross-jurisdictional · 2023–25</span>
     </div>
     <div class="ach-card reveal reveal-d1" data-n="04">
-      <span class="ach-icon">🤖</span>
+      <svg class="ach-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+      </svg>
       <h3 class="ach-title">RAG Architecture for Global FMCG</h3>
       <p class="ach-desc">Delivered a full RAG implementation design for a global FMCG corporation — covering technical architecture, model selection, EU AI Act compliance framework, GDPR requirements, and a complete Scrum delivery plan including UAT governance.</p>
       <span class="ach-pill">AI · GDPR · EU AI Act · Enterprise · 2025</span>
@@ -1268,7 +1417,6 @@ footer{
 
 <div class="divider"></div>
 
-<!-- ═══════════════ CONTACT ═══════════════ -->
 <section id="contact">
   <div class="contact-grid">
     <div>
@@ -1301,8 +1449,7 @@ footer{
       </div>
     </div>
     <div class="reveal reveal-d1">
-      <!-- Replace YOUR_FORM_ID with your Formspree form ID -->
-      <form class="contact-form" id="contactForm">
+      <form class="contact-form" id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
         <div class="form-row">
           <div class="form-field">
             <label class="form-label">Name</label>
@@ -1328,7 +1475,7 @@ footer{
         <div class="form-status" id="formStatus">
           ✓ Message sent — I'll get back to you shortly.
         </div>
-        <button type="submit" class="btn-primary" style="width:100%;text-align:center;border:none;cursor:pointer">
+        <button type="submit" class="btn-primary" style="width:100%;text-align:center">
           Send message →
         </button>
       </form>
@@ -1336,7 +1483,6 @@ footer{
   </div>
 </section>
 
-<!-- ═══════════════ FOOTER ═══════════════ -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -1356,44 +1502,70 @@ footer{
   </div>
 </footer>
 
+<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
-// ── Custom cursor
-const cur = document.getElementById('cursor');
-const ring = document.getElementById('cursorRing');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cur.style.left=mx+'px';cur.style.top=my+'px';
-});
-function animateRing(){
-  rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
-  ring.style.left=rx+'px';ring.style.top=ry+'px';
-  requestAnimationFrame(animateRing);
-}
-animateRing();
-document.querySelectorAll('a,button,.svc-card,.ach-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{
-    ring.style.width='48px';ring.style.height='48px';
-    ring.style.borderColor='rgba(79,110,247,0.6)';
-  });
-  el.addEventListener('mouseleave',()=>{
-    ring.style.width='32px';ring.style.height='32px';
-    ring.style.borderColor='rgba(79,110,247,0.3)';
-  });
+// Lenis smooth scroll
+const lenis = new Lenis({
+  duration: 1.2,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  orientation: 'vertical',
+  gestureOrientation: 'vertical',
+  smoothWheel: true,
+  wheelMultiplier: 1,
+  touchMultiplier: 2,
 });
 
-// ── Progress bar
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
+
+// Custom cursor
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+
+// Hide custom cursor on touch devices
+if (window.matchMedia('(pointer: coarse)').matches) {
+  cur.style.display = 'none';
+  ring.style.display = 'none';
+} else {
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    cur.style.left=mx+'px';cur.style.top=my+'px';
+  });
+  function animateRing(){
+    rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
+    ring.style.left=rx+'px';ring.style.top=ry+'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+  
+  document.querySelectorAll('a,button,.svc-card,.ach-card,.tech-node,.node-box').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{
+      ring.style.width='48px';ring.style.height='48px';
+      ring.style.borderColor='rgba(79,110,247,0.6)';
+    });
+    el.addEventListener('mouseleave',()=>{
+      ring.style.width='32px';ring.style.height='32px';
+      ring.style.borderColor='rgba(79,110,247,0.3)';
+    });
+  });
+}
+
+// Progress bar
 window.addEventListener('scroll',()=>{
   const d=document.documentElement;
   const pct=(d.scrollTop/(d.scrollHeight-d.clientHeight))*100;
   document.getElementById('progress').style.width=pct+'%';
 });
 
-// ── Nav scroll
+// Nav scroll
 const nav=document.getElementById('navbar');
 window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
 
-// ── Hamburger
+// Hamburger
 const ham=document.getElementById('hamburger');
 const mob=document.getElementById('mobileMenu');
 ham.addEventListener('click',()=>{
@@ -1404,7 +1576,7 @@ function closeMobile(){
   ham.classList.remove('open');mob.classList.remove('open');
 }
 
-// ── Scroll reveal
+// Scroll reveal
 const revEls=document.querySelectorAll('.reveal');
 const revObs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
@@ -1413,9 +1585,49 @@ const revObs=new IntersectionObserver(entries=>{
 },{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
 revEls.forEach(el=>revObs.observe(el));
 
-// ── Parallax on hero
+// Counter animation
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.target);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      
+      let current = 0;
+      const increment = target / 40;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          el.textContent = prefix + target + suffix;
+          clearInterval(timer);
+        } else {
+          el.textContent = prefix + Math.floor(current) + suffix;
+        }
+      }, 30);
+      
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stat-n').forEach(el => counterObserver.observe(el));
+
+// Magnetic buttons
+document.querySelectorAll('.btn-primary, .btn-outline').forEach(btn => {
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x * 0.15}px, ${y * 0.25}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+
+// Parallax on hero
 const parallaxEl=document.getElementById('parallaxLayer');
-const heroEl=document.getElementById('hero');
 window.addEventListener('scroll',()=>{
   const scrolled=window.scrollY;
   if(scrolled<window.innerHeight){
@@ -1423,40 +1635,40 @@ window.addEventListener('scroll',()=>{
   }
 });
 
-// ── Animate float elements on load
+// Animate float elements on load
 window.addEventListener('load',()=>{
   document.querySelectorAll('.float-el').forEach((el,i)=>{
     setTimeout(()=>el.classList.add('loaded'),800+i*200);
   });
 });
 
-// ── Contact form (Formspree)
+// Contact form
 document.getElementById('contactForm').addEventListener('submit',async function(e){
   e.preventDefault();
   const btn=this.querySelector('button[type=submit]');
+  const originalText = btn.textContent;
   btn.textContent='Sending...';btn.disabled=true;
   
-  // To connect to Formspree: replace URL below with https://formspree.io/f/YOUR_FORM_ID
-  // For now, simulate success
-  await new Promise(r=>setTimeout(r,1200));
-  
-  document.getElementById('formStatus').classList.add('show');
-  this.reset();
-  btn.textContent='Send message →';btn.disabled=false;
-  
-  /* Uncomment and add your Formspree ID to activate:
   try {
-    const res = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-      method:'POST', headers:{'Accept':'application/json'},
-      body: new FormData(this)
+    const res = await fetch(this.action, {
+      method:'POST',
+      body: new FormData(this),
+      headers: { 'Accept': 'application/json' }
     });
+    
     if(res.ok){
       document.getElementById('formStatus').classList.add('show');
       this.reset();
+    } else {
+      alert('There was an error sending your message. Please try again or email me directly.');
     }
-  } catch(err){ console.error(err); }
-  btn.textContent='Send message →'; btn.disabled=false;
-  */
+  } catch(err) {
+    console.error(err);
+    alert('There was an error sending your message. Please try again or email me directly.');
+  }
+  
+  btn.textContent=originalText;
+  btn.disabled=false;
 });
 </script>
 </body>
