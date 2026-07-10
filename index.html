@@ -1,1957 +1,1086 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rafael Montaner — Legal Operations Architect</title>
+<meta name="description" content="Bridging the gap between legal operations, process architecture, and software implementation for enterprise legal departments.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap">
 <style>
+  /* ─────────────────────────────────────────────────
+  DESIGN SYSTEM & TOKENS
+  ───────────────────────────────────────────────── */
   :root {
-    --sand:        #e3dfd2;      /* paper, warm but cooler than before */
-    --sand-deep:   #cfc7b3;
-    --sage:        #b08d4f;      /* gold, replaces sage-green */
-    --sage-deep:   #7d5f2e;      /* deep gold for italics/quotes — darkened for contrast */
-    --cream:       #f3f1ea;
-    --cream-bright:#faf9f5;
-    --cream-soft:  #eae6da;
-    --accent:      #182e49;      /* deep navy — core legal/tech identity, darkened */
-    --accent-deep: #0d1c2e;
-    --dusk-blue:   #9fb2c6;
-    --ink:         #10131a;      /* near-black for real contrast on paper */
-    --ink-soft:    #2b2d33;
-    --ink-mute:    #63656d;
-    --line:        rgba(16, 19, 26, 0.16);
-    --line-soft:   rgba(16, 19, 26, 0.08);
-    --ease-quiet:    cubic-bezier(.22, 1, .36, 1);
-    --ease-precise:  cubic-bezier(.4, 0, .2, 1);
-    --ease-emphasis: cubic-bezier(.16, 1, .3, 1);
+    --bg: #FCFBF9;            /* Warm white */
+    --surface: #FFFFFF;
+    --surface-alt: #F7F5F1;
+    --text: #111111;          /* Deep charcoal */
+    --text-soft: #4A4A4A;
+    --text-mute: #8A8A8A;
+    --line: #E8E6E1;
+    --line-soft: #F0EEE9;
+    --accent: #1B2A41;        /* Deep editorial navy */
+    --ease-quiet: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --grid-gap: 24px;
+    --max-width: 1200px;
+    --header-height: 80px;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+
+  /* ─────────────────────────────────────────────────
+  RESET & BASE STYLES
+  ───────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--cream);
-    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     font-weight: 400;
-    line-height: 1.75;
-    font-size: 16px;
+    line-height: 1.65;
+    font-size: 17px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    text-rendering: optimizeLegibility;
   }
-  ::selection { background: var(--accent); color: var(--cream-bright); }
+  body.no-scroll { overflow: hidden; }
+  ::selection { background: var(--accent); color: var(--bg); }
+  
+  /* Fluid Typography */
+  h1, h2, h3, h4 { font-family: 'Newsreader', serif; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; }
+  h1 { font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1.05; }
+  h2 { font-size: clamp(2rem, 4.5vw, 3.75rem); line-height: 1.1; }
+  h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); line-height: 1.2; }
+  p { font-size: clamp(1rem, 1.1vw, 1.125rem); line-height: 1.75; color: var(--text-soft); max-width: 68ch; }
+  em { font-style: italic; color: var(--text); }
+  a { color: inherit; text-decoration: none; }
 
-  /* ─────── Linen grain overlay ─────── */
-  .grain {
-    position: fixed; inset: 0;
-    pointer-events: none;
-    z-index: 9998;
-    opacity: 0.4;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.12 0 0 0 0 0.14 0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
+  /* Accessibility Focus States */
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
+  button:focus-visible { outline-offset: 2px; }
 
-  /* ─────── Topbar ─────── */
-  .topbar {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: rgba(244, 241, 234, 0.86);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--line-soft);
-    transition: background 600ms var(--ease-quiet);
-  }
-  .topbar__inner {
-    max-width: 1400px;
+  /* ─────────────────────────────────────────────────
+  LAYOUT GRID
+  ───────────────────────────────────────────────── */
+  .container {
+    max-width: var(--max-width);
     margin: 0 auto;
-    padding: 1.1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-  }
-  .brand {
-    display: flex; align-items: center; gap: 0.7rem;
-    text-decoration: none;
-    color: var(--ink);
-  }
-  .brand__mark {
-    width: 22px; height: 22px;
-    position: relative;
-    border-radius: 50%;
-    border: 1px solid var(--ink);
-  }
-  .brand__mark::before {
-    content: '';
-    position: absolute;
-    inset: 4px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: brand-breath 8s ease-in-out infinite;
-  }
-  @keyframes brand-breath {
-    0%, 100% { transform: scale(0.55); opacity: 0.6; }
-    50% { transform: scale(1); opacity: 1; }
-  }
-  .brand__name {
-    font-family: 'Fraunces', serif;
-    font-weight: 400;
-    font-size: 1.15rem;
-    letter-spacing: 0.01em;
-    font-variation-settings: "opsz" 14;
-  }
-  .nav { display: flex; gap: 2.2rem; }
-  .nav a {
-    font-size: 12px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    text-decoration: none;
-    font-weight: 400;
-    transition: color 400ms var(--ease-quiet);
+    padding: 0 48px;
+    width: 100%;
     position: relative;
   }
-  .nav a::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0; bottom: -6px;
-    height: 1px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 500ms var(--ease-quiet);
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--grid-gap);
   }
-  .nav a:hover { color: var(--ink); }
-  .nav a:hover::after { transform: scaleX(1); }
+  section { padding: 12rem 0; border-bottom: 1px solid var(--line); }
+  @media (max-width: 768px) { 
+    section { padding: 6rem 0; }
+    .container { padding: 0 24px; }
+  }
 
-  .topbar__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.6rem 1.2rem;
-    color: var(--ink);
-    text-decoration: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    transition: all 500ms var(--ease-quiet);
+  /* ─────────────────────────────────────────────────
+  HEADER / NAVIGATION
+  ───────────────────────────────────────────────── */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--header-height);
+    display: flex; align-items: center;
+    background: transparent;
+    transition: background 600ms var(--ease-quiet), backdrop-filter 600ms var(--ease-quiet), height 400ms var(--ease-quiet);
   }
-  .topbar__cta:hover { background: var(--accent); border-color: var(--accent); color: var(--cream-bright); }
+  .header.scrolled {
+    background: rgba(252, 251, 249, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--line-soft);
+    height: 64px;
+  }
+  .header__inner {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; max-width: var(--max-width); margin: 0 auto; padding: 0 48px;
+  }
+  .brand { font-family: 'Newsreader', serif; font-size: 1.2rem; font-weight: 500; letter-spacing: -0.01em; }
+  .nav { display: flex; align-items: center; gap: 2.5rem; }
+  .nav-links { display: flex; gap: 2.5rem; }
+  .nav-links a {
+    font-size: 0.875rem; font-weight: 500; color: var(--text-soft);
+    transition: color 400ms var(--ease-quiet); position: relative;
+    padding: 4px 0;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; left: 0; bottom: 0; width: 0; height: 1px;
+    background: var(--text); transition: width 400ms var(--ease-quiet);
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { width: 100%; }
 
   .lang-switch {
-    display: flex;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    overflow: hidden;
+    display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
+    transition: border-color 300ms var(--ease-quiet);
   }
+  .lang-switch:hover { border-color: var(--text-mute); }
   .lang-switch button {
-    background: none;
-    border: none;
-    padding: 0.5rem 0.8rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    color: var(--ink-mute);
-    cursor: pointer;
-    transition: all 400ms var(--ease-quiet);
+    background: none; border: none; padding: 0.35rem 0.6rem;
+    font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 500;
+    color: var(--text-mute); cursor: pointer; transition: all 300ms var(--ease-quiet);
   }
-  .lang-switch button + button { border-left: 1px solid var(--line); }
-  .lang-switch button:hover { color: var(--ink); }
-  .lang-switch button.is-active { background: var(--accent); color: var(--cream-bright); }
+  .lang-switch button:hover { color: var(--text); background: var(--surface-alt); }
+  .lang-switch button.is-active { background: var(--text); color: var(--bg); }
 
-  /* ─────── Section frame ─────── */
-  section { position: relative; }
-  .section-head {
-    max-width: 880px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 0 2rem;
+  .nav-cta {
+    padding: 0.6rem 1.2rem; background: var(--text); color: var(--bg);
+    border-radius: 4px; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.02em;
+    transition: background 300ms var(--ease-quiet), transform 300ms var(--ease-quiet), box-shadow 300ms var(--ease-quiet);
+    display: inline-flex; align-items: center; gap: 0.4rem;
   }
-  .section-label {
-    display: inline-block;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 2rem;
-  }
-  .section-title {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-variation-settings: "opsz" 144;
-    font-size: clamp(2.6rem, 6vw, 4.6rem);
-    line-height: 1.05;
-    letter-spacing: -0.015em;
-    color: var(--ink);
-    margin-bottom: 2rem;
-  }
-  .section-title em {
-    font-style: italic;
-    font-weight: 300;
-    color: var(--sage-deep);
-  }
-  .section-lead {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-style: italic;
-    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
-    line-height: 1.7;
-    color: var(--ink-soft);
-    max-width: 580px;
-    margin: 0 auto;
-  }
+  .nav-cta:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .nav-cta svg { transition: transform 300ms var(--ease-quiet); }
+  .nav-cta:hover svg { transform: translateX(2px); }
 
-  /* ─────── Fade-up entrance ─────── */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(36px);
-    transition: opacity 1000ms var(--ease-quiet), transform 1000ms var(--ease-quiet);
+  .mobile-toggle { 
+    display: none; background: none; border: none; cursor: pointer; color: var(--text);
+    z-index: 101; padding: 8px;
+  }
+  .mobile-toggle svg { width: 24px; height: 24px; }
+
+  /* Mobile Menu */
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 99;
+    background: rgba(252, 251, 249, 0.98);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 2rem; opacity: 0; visibility: hidden;
+    transition: opacity 500ms var(--ease-quiet), visibility 500ms var(--ease-quiet);
+  }
+  .mobile-menu.is-open { opacity: 1; visibility: visible; }
+  .mobile-menu a {
+    font-family: 'Newsreader', serif; font-size: 2rem; color: var(--text);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 600ms var(--ease-emphasis), transform 600ms var(--ease-emphasis);
+  }
+  .mobile-menu.is-open a { opacity: 1; transform: translateY(0); }
+  .mobile-menu.is-open a:nth-child(1) { transition-delay: 100ms; }
+  .mobile-menu.is-open a:nth-child(2) { transition-delay: 150ms; }
+  .mobile-menu.is-open a:nth-child(3) { transition-delay: 200ms; }
+  .mobile-menu.is-open a:nth-child(4) { transition-delay: 250ms; }
+  .mobile-menu.is-open a:nth-child(5) { transition-delay: 300ms; }
+
+  /* ─────────────────────────────────────────────────
+  ANIMATIONS (Invisible / Cinematic)
+  ───────────────────────────────────────────────── */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 1200ms var(--ease-emphasis), transform 1200ms var(--ease-emphasis);
     will-change: transform, opacity;
   }
-  .fade-up.is-in { opacity: 1; transform: none; }
-  .fade-up.delay-1 { transition-delay: 120ms; }
-  .fade-up.delay-2 { transition-delay: 240ms; }
-  .fade-up.delay-3 { transition-delay: 360ms; }
-  .fade-up.delay-4 { transition-delay: 480ms; }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  .delay-1 { transition-delay: 150ms; }
+  .delay-2 { transition-delay: 300ms; }
+  .delay-3 { transition-delay: 450ms; }
 
-  /* ─────── HERO ─────── */
+  /* ─────────────────────────────────────────────────
+  HERO SECTION
+  ───────────────────────────────────────────────── */
   .hero {
-    position: relative;
-    min-height: 100vh;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    overflow: hidden;
-    color: var(--cream-bright);
-    padding: 8rem 2rem 6rem;
-    background: radial-gradient(ellipse at 30% 20%, #1c3454 0%, var(--accent-deep) 55%, #0a1420 100%);
-  }
-  .hero__media { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
-  .hero__blueprint {
-    position: absolute;
-    inset: -8%;
-    width: 116%; height: 116%;
-    will-change: transform;
-    animation: hero-breath 14s ease-in-out infinite alternate;
-  }
-  .hero__blueprint .grid-line { stroke: rgba(244, 241, 234, 0.07); stroke-width: 1; }
-  .hero__blueprint .schema-line { stroke: var(--sage); stroke-width: 1.4; fill: none; opacity: 0.55; }
-  .hero__blueprint .schema-node { fill: var(--sage); opacity: 0.9; }
-  .hero__blueprint .schema-node-ring { fill: none; stroke: var(--sage); stroke-width: 1; opacity: 0.35; }
-  .hero__blueprint .schema-dim { stroke: rgba(244, 241, 234, 0.25); stroke-width: 1; stroke-dasharray: 2 4; }
-  @keyframes hero-breath {
-    0%   { transform: scale(1.00) translate(0%, 0%); }
-    100% { transform: scale(1.035) translate(-0.8%, -0.6%); }
-  }
-  .hero__veil {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse at 50% 38%, transparent 0%, rgba(8, 14, 22, 0.25) 65%, rgba(6, 11, 18, 0.65) 100%),
-      linear-gradient(180deg, rgba(8, 14, 22, 0.35) 0%, transparent 30%, transparent 68%, rgba(6, 11, 18, 0.6) 100%);
-    z-index: 1;
-  }
-  .hero__content { position: relative; z-index: 3; max-width: 920px; }
-  .hero__label {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.36em;
-    text-transform: uppercase;
-    color: rgba(244, 241, 234, 0.78);
-    margin-bottom: 3.5rem;
-  }
-  .hero__label .sep {
-    display: inline-block;
-    width: 28px; height: 1px;
-    background: rgba(244, 241, 234, 0.5);
-    vertical-align: middle;
-    margin: 0 1rem;
-  }
-  .hero__title {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-variation-settings: "opsz" 144;
-    font-size: clamp(3.5rem, 10vw, 8rem);
-    line-height: 0.95;
-    letter-spacing: -0.025em;
-    margin-bottom: 1.8rem;
-    color: var(--cream-bright);
-  }
-  .hero__tag {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-style: italic;
-    font-variation-settings: "opsz" 24;
-    font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-    line-height: 1.65;
-    color: rgba(244, 241, 234, 0.85);
-    max-width: 520px;
-    margin: 0 auto 3.5rem;
-  }
-  .hero__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.15rem 2.4rem;
-    border: 1px solid rgba(244, 241, 234, 0.45);
-    color: var(--cream-bright);
-    text-decoration: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    border-radius: 999px;
-    background: rgba(244, 241, 234, 0.04);
-    transition: all 600ms var(--ease-quiet);
-  }
-  .hero__cta:hover {
-    background: var(--cream-bright);
-    color: var(--ink);
-    border-color: var(--cream-bright);
-  }
-  .hero__cta .arrow { transition: transform 500ms var(--ease-quiet); }
-  .hero__cta:hover .arrow { transform: translateX(6px); }
-  .hero__scroll {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    z-index: 3;
-    color: rgba(244, 241, 234, 0.7);
-    font-size: 10px;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    font-weight: 500;
-  }
-  .hero__scrollline {
-    width: 1px;
-    height: 50px;
-    background: rgba(244, 241, 234, 0.25);
-    position: relative;
-    overflow: hidden;
-  }
-  .hero__scrollline::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: rgba(244, 241, 234, 0.8);
-    animation: scrollline 2.6s var(--ease-quiet) infinite;
-  }
-  @keyframes scrollline { 0% { top: -50%; } 100% { top: 100%; } }
-
-  /* ─────── PRACTICES (Services) ─────── */
-  .practices { padding: 10rem 2rem 10rem; background: var(--cream); }
-  .practices__grid {
-    max-width: 1280px;
-    margin: 6rem auto 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--line);
-  }
-  .practice {
-    padding: 4rem 3rem;
+    min-height: 100vh; 
+    display: flex; align-items: center;
     border-bottom: 1px solid var(--line);
-    border-right: 1px solid var(--line);
     position: relative;
-    transition: background 700ms var(--ease-quiet);
+    padding-top: var(--header-height);
   }
-  .practice:nth-child(2n) { border-right: none; }
-  .practice:last-child, .practice:nth-last-child(2) { border-bottom: none; }
-  .practice:hover { background: var(--cream-soft); }
-  .practice__num {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.32em;
-    color: var(--accent);
-    margin-bottom: 2.5rem;
-  }
-  .practice__name {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-variation-settings: "opsz" 90;
-    font-size: clamp(2.4rem, 3.5vw, 3.2rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-    margin-bottom: 0.5rem;
-  }
-  .practice__tag {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 1rem;
-    color: var(--sage-deep);
-    margin-bottom: 2rem;
-  }
-  .practice__desc {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.75;
-    color: var(--ink-soft);
-    max-width: 380px;
-    margin-bottom: 2.5rem;
-  }
-  .practice__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    font-weight: 500;
-  }
-  .practice__meta span { display: flex; align-items: center; gap: 0.5rem; }
-  .practice__meta span::before {
-    content: '';
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--sage);
-  }
-
-  /* ─────── TEACHERS (Approach) ─────── */
-  .approach { padding: 10rem 2rem; background: var(--cream-soft); position: relative; }
-  .approach__grid {
-    max-width: 1280px;
-    margin: 6rem auto 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3rem;
-  }
-  .principle {
-    background: var(--cream-bright);
-    border-radius: 4px;
-    overflow: hidden;
-    transition: transform 800ms var(--ease-quiet), box-shadow 800ms var(--ease-quiet);
-    cursor: pointer;
-  }
-  .principle:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 24px 50px -28px rgba(28, 32, 36, 0.18);
-  }
-  .principle__mark {
-    aspect-ratio: 16 / 10;
-    position: relative;
-    background: linear-gradient(155deg, var(--accent) 0%, var(--accent-deep) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .principle__mark svg {
-    width: 64px; height: 64px;
-    stroke: var(--sage);
-    fill: none;
-    stroke-width: 1.4;
-    transition: transform 900ms var(--ease-quiet);
-  }
-  .principle:hover .principle__mark svg { transform: scale(1.08); }
-  .principle__mark::after {
-    content: '';
-    position: absolute; inset: 10px;
-    border: 1px solid rgba(244, 241, 234, 0.16);
-    pointer-events: none;
-  }
-  .principle__mark .mark-index {
-    position: absolute;
-    top: 14px; left: 18px;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    color: rgba(244, 241, 234, 0.55);
-  }
-  .principle__body { padding: 2rem 1.8rem 2.4rem; }
-  .principle__name {
-    font-family: 'Fraunces', serif;
-    font-weight: 400;
-    font-variation-settings: "opsz" 60;
-    font-size: 1.6rem;
-    line-height: 1.1;
-    color: var(--ink);
-    margin-bottom: 0.4rem;
-  }
-  .principle__role {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--sage-deep);
-    font-weight: 500;
-    margin-bottom: 1.6rem;
-  }
-  .principle__quote-wrap {
-    position: relative;
-    min-height: 90px;
-    padding-top: 1.4rem;
-    border-top: 1px solid var(--line-soft);
-  }
-  .principle__prompt {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-size: 0.92rem;
-    color: var(--ink-mute);
-    transition: opacity 500ms var(--ease-quiet);
-  }
-  .principle__prompt::before { content: '↳ '; color: var(--accent); font-style: normal; }
-  .principle.is-typing .principle__prompt { opacity: 0; }
-  .principle__quote {
-    position: absolute;
-    top: 1.4rem; left: 0; right: 0;
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: var(--ink);
-    opacity: 0;
-    transition: opacity 400ms var(--ease-quiet);
-  }
-  .principle__quote::before {
-    content: '"';
-    color: var(--accent);
-    font-size: 1.4em;
-    line-height: 0;
-    vertical-align: -0.1em;
-    margin-right: 0.1em;
-  }
-  .principle.is-typing .principle__quote { opacity: 1; }
-  .principle__quote-cursor {
-    display: inline-block;
-    width: 2px;
-    height: 1em;
-    background: var(--accent);
-    vertical-align: text-bottom;
-    margin-left: 1px;
-    animation: cursor 1s steps(2) infinite;
-  }
-  @keyframes cursor { 50% { opacity: 0; } }
-
-  /* ─────── SCHEDULE (Track Record) ─────── */
-  .schedule { padding: 10rem 2rem; background: var(--cream); }
-  .schedule__list {
-    max-width: 1180px;
-    margin: 6rem auto 0;
-    border-top: 1px solid var(--line);
-  }
-  .sched-day-header {
-    display: grid;
-    grid-template-columns: 80px 140px 1fr 120px 140px 30px;
-    gap: 1.5rem;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--line-soft);
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    font-weight: 500;
-  }
-  .sched-row {
-    border-bottom: 1px solid var(--line-soft);
-    transition: background 500ms var(--ease-quiet);
-  }
-  .sched-row:hover { background: var(--cream-soft); }
-  .sched-row.is-open { background: var(--cream-soft); }
-  .sched-row__main {
-    display: grid;
-    grid-template-columns: 80px 140px 1fr 120px 140px 30px;
-    gap: 1.5rem;
-    padding: 1.8rem 1.5rem;
-    align-items: center;
-    cursor: pointer;
-  }
-  .sched-day { font-family: 'Fraunces', serif; font-weight: 400; font-size: 1.15rem; color: var(--ink); }
-  .sched-time { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--ink-soft); font-weight: 400; letter-spacing: 0.02em; }
-  .sched-class { font-family: 'Fraunces', serif; font-weight: 400; font-size: 1.2rem; color: var(--ink); line-height: 1.2; }
-  .sched-class em { font-style: italic; color: var(--ink-mute); font-size: 0.85rem; font-weight: 300; margin-left: 0.4rem; }
-  .sched-location { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--ink-soft); letter-spacing: 0.04em; }
-  .sched-focus { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--accent); letter-spacing: 0.04em; font-weight: 500;}
-  .sched-expand {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 1px solid var(--line);
-    display: flex; align-items: center; justify-content: center;
-    transition: all 500ms var(--ease-quiet);
-    color: var(--ink-soft);
-    font-size: 14px;
-    font-weight: 300;
-  }
-  .sched-row:hover .sched-expand { border-color: var(--accent); color: var(--accent); }
-  .sched-row.is-open .sched-expand {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--cream-bright);
-    transform: rotate(45deg);
-  }
-  .sched-row__detail {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 700ms var(--ease-quiet);
-  }
-  .sched-row.is-open .sched-row__detail { max-height: 360px; }
-  .sched-detail__inner {
-    padding: 0 1.5rem 2.4rem;
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 1rem 3rem;
-    border-top: 1px dashed var(--line-soft);
-    padding-top: 1.6rem;
-    margin-top: 0.4rem;
-  }
-  .sched-detail__inner > div { display: contents; }
-  .sched-detail__inner dt {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    font-weight: 500;
-    padding-top: 0.15rem;
-  }
-  .sched-detail__inner dd {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: 1rem;
-    color: var(--ink);
-    line-height: 1.55;
-  }
-  .sched-detail__inner dd em { font-style: italic; color: var(--sage-deep); }
-
-  /* ─────── SIGNUP (Contact) ─────── */
-  .signup { padding: 10rem 2rem 12rem; background: var(--sand); position: relative; overflow: hidden; }
-  .signup::before {
-    content: '';
-    position: absolute;
-    top: -10%; right: -10%;
-    width: 50%; height: 70%;
-    background: radial-gradient(circle, rgba(176, 190, 197, 0.4) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .signup::after {
-    content: '';
-    position: absolute;
-    bottom: -10%; left: -10%;
-    width: 50%; height: 70%;
-    background: radial-gradient(circle, rgba(138, 154, 135, 0.25) 0%, transparent 65%);
-    pointer-events: none;
-  }
-  .signup__inner {
-    max-width: 1180px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: start;
+  .hero__content {
+    grid-column: 1 / 9;
+    max-width: 820px;
     position: relative;
     z-index: 2;
   }
-  .signup__text { padding-top: 1rem; }
-  .signup__text .section-label, .signup__text .section-title, .signup__text .section-lead {
-    text-align: left;
-    margin-left: 0;
+  .hero__eyebrow {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-mute); margin-bottom: 3rem; display: flex; align-items: center; gap: 1rem;
   }
-  .signup__text .section-title em { color: var(--accent-deep); }
-  .signup__list {
-    list-style: none;
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--line);
+  .hero__eyebrow::before {
+    content: ''; width: 32px; height: 1px; background: var(--text-mute);
   }
-  .signup__list li {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    color: var(--ink-soft);
-    padding: 0.7rem 0;
-    font-size: 1rem;
-    line-height: 1.5;
+  .hero__title {
+    font-size: clamp(2.5rem, 5.5vw, 4.75rem); font-weight: 400; line-height: 1.05;
+    margin-bottom: 3rem; color: var(--text); letter-spacing: -0.03em;
   }
-  .signup__list li::before {
-    content: '·';
-    color: var(--accent);
-    margin-right: 0.7rem;
-    font-style: normal;
-    font-size: 1.4em;
-    vertical-align: -0.15em;
+  .hero__sub {
+    font-size: clamp(1.1rem, 1.4vw, 1.35rem); line-height: 1.5;
+    color: var(--text-soft); font-weight: 300;
+    margin-bottom: 3.5rem; max-width: 58ch;
   }
-  .signup__form {
-    background: var(--cream-bright);
-    padding: 3rem 2.6rem;
-    border-radius: 6px;
-    box-shadow: 0 30px 60px -40px rgba(28, 32, 36, 0.2);
+  .hero__cta {
+    display: inline-flex; align-items: center; gap: 0.75rem;
+    font-family: 'Inter', sans-serif; font-weight: 500; font-size: 0.95rem;
+    color: var(--text); border-bottom: 1px solid var(--text); padding-bottom: 4px;
+    transition: gap 400ms var(--ease-quiet), color 300ms var(--ease-quiet), border-color 300ms var(--ease-quiet);
   }
-  .signup__form label { display: block; margin-bottom: 1.6rem; }
-  .signup__form label span {
-    display: block;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--ink-mute);
-    font-weight: 500;
-    margin-bottom: 0.6rem;
+  .hero__cta:hover { gap: 1.25rem; color: var(--accent); border-color: var(--accent); }
+  
+  .hero__meta {
+    position: absolute; bottom: 4rem; right: 48px;
+    text-align: right; font-size: 0.8rem; color: var(--text-mute);
+    border-right: 1px solid var(--line); padding-right: 1.5rem;
   }
-  .signup__form input, .signup__form select, .signup__form textarea {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--line);
-    padding: 0.6rem 0;
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-size: 1.1rem;
-    color: var(--ink);
-    transition: border-color 500ms var(--ease-quiet);
+  .hero__meta strong { display: block; color: var(--text); font-weight: 500; margin-bottom: 4px; }
+
+  /* ─────────────────────────────────────────────────
+  IMPLEMENTATION PHILOSOPHY (The Gap)
+  ───────────────────────────────────────────────── */
+  .gap__layout { display: flex; flex-direction: column; gap: 4rem; }
+  .gap__header { grid-column: 1 / 7; }
+  .gap__intro { grid-column: 7 / 13; align-self: end; }
+  
+  .gap__list {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4rem;
+    margin-top: 6rem; padding-top: 4rem; border-top: 1px solid var(--line);
+  }
+  .gap__item { position: relative; padding-left: 1.5rem; border-left: 1px solid var(--line); }
+  .gap__item h3 { margin-bottom: 1rem; font-size: 1.3rem; }
+  .gap__item p { font-size: 0.95rem; }
+  .gap__num { font-size: 0.75rem; color: var(--text-mute); margin-bottom: 0.75rem; font-weight: 500; letter-spacing: 0.1em; display: block; }
+
+  /* ─────────────────────────────────────────────────
+  METHODOLOGY (Split Layout)
+  ───────────────────────────────────────────────── */
+  #methodology { background: var(--surface); }
+  .method__left { grid-column: 1 / 5; position: sticky; top: 120px; align-self: start; }
+  .method__right { grid-column: 6 / 13; display: flex; flex-direction: column; gap: 4rem; }
+  .method__step { padding-bottom: 4rem; border-bottom: 1px solid var(--line); }
+  .method__step:last-child { border-bottom: none; padding-bottom: 0; }
+  .method__label { font-size: 0.8rem; font-weight: 600; color: var(--accent); margin-bottom: 1rem; display: block; font-family: 'Inter', sans-serif; }
+  .method__title { font-size: 1.5rem; margin-bottom: 1rem; }
+  .method__desc { font-size: 1rem; }
+
+  /* ─────────────────────────────────────────────────
+  CASE STUDIES (Alternating Editorial)
+  ───────────────────────────────────────────────── */
+  .case-study { 
+    display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--grid-gap); 
+    margin-bottom: 10rem; padding: 3rem; border-radius: 4px;
+    transition: background 400ms var(--ease-quiet), box-shadow 400ms var(--ease-quiet);
+  }
+  .case-study:hover { 
+    background: var(--surface); 
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.04);
+  }
+  .case-study:last-child { margin-bottom: 0; }
+  .case-study:nth-child(even) .case__meta { grid-column: 8 / 13; order: 2; }
+  .case-study:nth-child(even) .case__content { grid-column: 1 / 7; order: 1; }
+  
+  .case__meta { grid-column: 1 / 5; }
+  .case__content { grid-column: 6 / 13; }
+  
+  .case__tag { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 1rem; display: block; font-weight: 600; }
+  .case__title { font-size: clamp(1.5rem, 3vw, 2.25rem); margin-bottom: 2rem; line-height: 1.15; }
+  .case__details { display: flex; flex-direction: column; gap: 2.5rem; margin-top: 2rem; }
+  .case__detail-block h4 { font-family: 'Inter', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-mute); margin-bottom: 0.5rem; font-weight: 600; }
+  .case__detail-block p { font-size: 0.95rem; }
+  .case__outcome { font-family: 'Newsreader', serif; font-style: italic; font-size: 1.25rem; color: var(--text); margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+
+  /* ─────────────────────────────────────────────────
+  CAPABILITIES & TECH (Minimalist List)
+  ───────────────────────────────────────────────── */
+  .caps__header { margin-bottom: 5rem; max-width: 600px; }
+  .caps__list { border-top: 1px solid var(--line); }
+  .caps__item {
+    display: grid; grid-template-columns: 80px 1fr 2fr 40px; gap: 2rem;
+    padding: 2.5rem 0; border-bottom: 1px solid var(--line);
+    transition: padding-left 400ms var(--ease-quiet);
+    cursor: pointer;
+  }
+  .caps__item:hover { padding-left: 1rem; }
+  .caps__num { font-size: 0.8rem; color: var(--text-mute); font-weight: 500; padding-top: 0.25rem; font-family: 'Inter', sans-serif; }
+  .caps__title { font-family: 'Newsreader', serif; font-size: 1.25rem; }
+  .caps__desc { font-size: 0.95rem; color: var(--text-soft); }
+  .caps__arrow { align-self: center; opacity: 0; transform: translateX(-10px); transition: all 400ms var(--ease-quiet); color: var(--text-mute); }
+  .caps__item:hover .caps__arrow { opacity: 1; transform: translateX(0); }
+
+  /* ─────────────────────────────────────────────────
+  CONTACT FORM
+  ───────────────────────────────────────────────── */
+  .contact { background: var(--bg); border-bottom: none; }
+  .contact__grid { grid-column: 2 / 12; text-align: center; }
+  .contact__title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 2rem; }
+  .contact__lead { font-size: 1.2rem; margin: 0 auto 5rem; max-width: 50ch; }
+  
+  .contact__form {
+    max-width: 600px; margin: 0 auto; text-align: left;
+    display: flex; flex-direction: column; gap: 2.5rem;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+  .form-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); font-weight: 600; }
+  .form-input, .form-select, .form-textarea {
+    background: transparent; border: none; border-bottom: 1px solid var(--line);
+    padding: 0.5rem 0; font-family: 'Inter', sans-serif; font-size: 1rem; color: var(--text);
+    transition: border-color 300ms var(--ease-quiet);
     border-radius: 0;
   }
-  .signup__form textarea { resize: vertical; min-height: 60px; font-size: 0.95rem; line-height: 1.6; }
-  .signup__form input:focus, .signup__form select:focus, .signup__form textarea:focus {
-    outline: none;
-    border-color: var(--accent);
+  .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--text); }
+  .form-select { cursor: pointer; }
+  .form-textarea { min-height: 60px; resize: vertical; }
+  
+  .form-submit {
+    margin-top: 1rem; padding: 1.2rem 2rem; background: var(--text); color: var(--bg);
+    border: none; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
+    letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border-radius: 4px;
+    transition: background 300ms var(--ease-quiet), transform 300ms var(--ease-quiet), box-shadow 300ms var(--ease-quiet);
+    align-self: flex-start;
   }
-  .signup__form input::placeholder, .signup__form textarea::placeholder {
-    color: var(--ink-mute);
-    font-style: italic;
+  .form-submit:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+  /* ─────────────────────────────────────────────────
+  FOOTER
+  ───────────────────────────────────────────────── */
+  footer { padding: 4rem 0; border-top: 1px solid var(--line); }
+  .footer__inner { display: flex; justify-content: space-between; align-items: center; }
+  .footer__copy { font-size: 0.85rem; color: var(--text-mute); }
+
+  /* ─────────────────────────────────────────────────
+  RESPONSIVE
+  ───────────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .nav-links { display: none; }
+    .nav-cta { display: none; }
+    .mobile-toggle { display: block; }
+    .hero__content { grid-column: 1 / 12; }
+    .hero__meta { display: none; }
+    .gap__header, .gap__intro, .case__meta, .case__content { grid-column: 1 / 13; }
+    .gap__intro { margin-top: 2rem; }
+    .gap__list { grid-template-columns: 1fr; gap: 3rem; }
+    .method__left { position: static; grid-column: 1 / 13; margin-bottom: 4rem; }
+    .method__right { grid-column: 1 / 13; }
+    .case-study:nth-child(even) .case__meta { order: 1; }
+    .case-study:nth-child(even) .case__content { order: 2; }
+    .caps__item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .caps__arrow { display: none; }
+    .form-row { grid-template-columns: 1fr; gap: 2.5rem; }
   }
-  .signup__btn {
-    width: 100%;
-    background: var(--ink);
-    color: var(--cream-bright);
-    border: none;
-    padding: 1.2rem 2rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 999px;
-    margin-top: 1rem;
-    transition: all 600ms var(--ease-quiet);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-  }
-  .signup__btn:hover { background: var(--accent); }
-  .signup__btn .arrow { transition: transform 500ms var(--ease-quiet); }
-  .signup__btn:hover .arrow { transform: translateX(4px); }
-  .signup__note {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-size: 0.85rem;
-    color: var(--ink-mute);
-    text-align: center;
-    margin-top: 1.4rem;
-    line-height: 1.5;
+  @media (max-width: 768px) {
+    section { padding: 5rem 0; }
+    .case-study { padding: 2rem 0; margin-bottom: 4rem; }
   }
 
-  /* ─────── FOOTER ─────── */
-  footer {
-    background: var(--ink);
-    color: var(--cream);
-    padding: 6rem 2rem 2rem;
-    position: relative;
-  }
-  .footer__inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
-    gap: 3rem;
-    padding-bottom: 4rem;
-    border-bottom: 1px solid rgba(244, 241, 234, 0.12);
-  }
-  .footer__brand .footer-name {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-variation-settings: "opsz" 90;
-    font-size: 2.4rem;
-    line-height: 1;
-    margin-bottom: 1.4rem;
-    letter-spacing: -0.02em;
-  }
-  .footer__brand p {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    color: rgba(244, 241, 234, 0.7);
-    line-height: 1.7;
-    max-width: 320px;
-    font-size: 0.95rem;
-  }
-  .footer__col h4 {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: rgba(244, 241, 234, 0.5);
-    margin-bottom: 1.5rem;
-  }
-  .footer__col ul { list-style: none; }
-  .footer__col li {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    color: rgba(244, 241, 234, 0.85);
-    line-height: 1.9;
-    font-size: 1rem;
-  }
-  .footer__col li.em {
-    font-style: italic;
-    color: rgba(244, 241, 234, 0.6);
-    font-size: 0.88rem;
-  }
-  .footer__base {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding-top: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: rgba(244, 241, 234, 0.4);
-  }
-
-  /* ─────── Status badge ─────── */
-  .status-badge {
-    position: fixed;
-    bottom: 1.8rem; left: 1.8rem;
-    z-index: 90;
-    display: flex; align-items: center;
-    gap: 0.7rem;
-    padding: 0.7rem 1.1rem 0.7rem 0.9rem;
-    background: var(--cream-bright);
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    box-shadow: 0 18px 40px -28px rgba(20, 24, 30, 0.35);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 1000ms var(--ease-quiet) 1.6s, transform 1000ms var(--ease-quiet) 1.6s;
-  }
-  .status-badge.is-in { opacity: 1; transform: none; }
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--sage);
-    box-shadow: 0 0 0 3px rgba(176, 141, 79, 0.18);
-    animation: status-pulse 2.6s ease-in-out infinite;
-  }
-  @keyframes status-pulse {
-    0%, 100% { opacity: 0.65; }
-    50% { opacity: 1; }
-  }
-  .status-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--ink-soft);
-  }
-
-  /* ─────── Responsive ─────── */
-  @media (max-width: 960px) {
-    .topbar__inner { padding: 0.9rem 1.5rem; }
-    .nav { display: none; }
-    .topbar__cta { padding: 0.55rem 0.9rem; font-size: 10px; }
-    .lang-switch button { padding: 0.5rem 0.55rem; font-size: 10px; }
-
-    .hero { padding: 7rem 1.5rem 5rem; }
-    .hero__title { font-size: clamp(3rem, 14vw, 5rem); }
-
-    .practices, .approach, .schedule, .signup { padding: 6rem 1.5rem; }
-    .section-head { padding: 0 0; }
-    .practices__grid { grid-template-columns: 1fr; margin-top: 4rem; }
-    .practice { padding: 3rem 1.5rem; border-right: none; }
-    .practice:last-child { border-bottom: none; }
-
-    .approach__grid { grid-template-columns: 1fr; gap: 2rem; margin-top: 4rem; }
-
-    .sched-day-header { display: none; }
-    .sched-row__main {
-      grid-template-columns: 70px 1fr;
-      grid-template-areas:
-        "year role"
-        "company location"
-        "company focus"
-        "expand expand";
-      gap: 0.5rem 1rem;
-      padding: 1.4rem 1rem;
-    }
-    .sched-day { grid-area: year; font-size: 1rem; }
-    .sched-time { grid-area: company; font-size: 12px; }
-    .sched-class { grid-area: role; font-size: 1.05rem; }
-    .sched-location { grid-area: location; }
-    .sched-focus { grid-area: focus; }
-    .sched-expand { grid-area: expand; margin-top: 0.6rem; }
-    .sched-detail__inner { grid-template-columns: 1fr; padding: 0 1rem 2rem; gap: 0.4rem 0; }
-    .sched-detail__inner dt { padding-top: 0.8rem; }
-
-    .signup__inner { grid-template-columns: 1fr; gap: 3rem; }
-    .signup__form { padding: 2rem 1.5rem; }
-
-    .footer__inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
-
-    .status-badge { bottom: 1.2rem; left: 1.2rem; }
-  }
-
+  /* ─────────────────────────────────────────────────
+  REDUCED MOTION
+  ───────────────────────────────────────────────── */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
-      transition-duration: 0.1ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
-    .hero__img-wrap { animation: none; }
-    .status-dot { animation: none; }
+    .reveal { opacity: 1; transform: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="grain"></div>
-
-<!-- ───────── Topbar ───────── -->
-<header class="topbar">
-  <div class="topbar__inner">
-    <a href="#top" class="brand">
-      <span class="brand__mark"></span>
-      <span class="brand__name">R. Montaner</span>
-    </a>
-    <nav class="nav">
-      <a href="#practices" data-i18n="nav.services">Services</a>
-      <a href="#approach" data-i18n="nav.approach">Approach</a>
-      <a href="#schedule" data-i18n="nav.track">Track Record</a>
-      <a href="#signup" data-i18n="nav.contact">Contact</a>
+<!-- ─────────────────────────────────────────────────
+HEADER
+───────────────────────────────────────────────── -->
+<header class="header" id="header">
+  <div class="header__inner">
+    <a href="#" class="brand">Rafael Montaner</a>
+    <nav class="nav" aria-label="Primary">
+      <div class="nav-links">
+        <a href="#approach" data-i18n="nav.approach">Approach</a>
+        <a href="#methodology" data-i18n="nav.methodology">Methodology</a>
+        <a href="#cases" data-i18n="nav.cases">Case Studies</a>
+        <a href="#capabilities" data-i18n="nav.capabilities">Capabilities</a>
+      </div>
+      <div class="lang-switch" id="langSwitch" role="group" aria-label="Language selection">
+        <button type="button" data-lang="en" class="is-active" aria-pressed="true">EN</button>
+        <button type="button" data-lang="es" aria-pressed="false">ES</button>
+        <button type="button" data-lang="de" aria-pressed="false">DE</button>
+        <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+      <a href="#contact" class="nav-cta">
+        <span data-i18n="nav.cta">Schedule Consultation</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </nav>
-    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
-      <button type="button" data-lang="en" class="is-active">EN</button>
-      <button type="button" data-lang="de">DE</button>
-      <button type="button" data-lang="es">ES</button>
-      <button type="button" data-lang="ru">RU</button>
-    </div>
-    <a href="#signup" class="topbar__cta">
-      <span data-i18n="topbar.cta">Get in touch</span>
-    </a>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Open menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
+    </button>
   </div>
 </header>
 
-<!-- ───────── Hero ───────── -->
-<section class="hero" id="top">
-  <div class="hero__media">
-    <svg class="hero__blueprint" id="heroBlueprint" viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs>
-        <pattern id="gridPattern" width="60" height="60" patternUnits="userSpaceOnUse">
-          <path d="M60 0 L0 0 0 60" class="grid-line"/>
-        </pattern>
-      </defs>
-      <rect width="1200" height="900" fill="url(#gridPattern)"/>
-      <!-- schematic: an intake -> logic -> output flow, echoing a BPMN / contract-clause tree -->
-      <g class="schema-group">
-        <path class="schema-dim" d="M120 220 L120 680"/>
-        <path class="schema-line" d="M120 260 L340 260"/>
-        <path class="schema-line" d="M340 260 L340 160 L620 160"/>
-        <path class="schema-line" d="M340 260 L340 420 L620 420"/>
-        <path class="schema-line" d="M340 260 L340 620 L620 620"/>
-        <path class="schema-line" d="M620 160 L900 160 L900 260"/>
-        <path class="schema-line" d="M620 420 L820 420 L820 340"/>
-        <path class="schema-line" d="M620 620 L900 620 L900 520"/>
-        <path class="schema-line" d="M900 260 L1080 260"/>
-        <path class="schema-line" d="M820 340 L1080 340"/>
-        <path class="schema-line" d="M900 520 L1080 520"/>
-        <circle class="schema-node-ring" cx="120" cy="260" r="14"/>
-        <circle class="schema-node" cx="120" cy="260" r="5"/>
-        <circle class="schema-node-ring" cx="340" cy="260" r="10"/>
-        <circle class="schema-node" cx="340" cy="260" r="4"/>
-        <circle class="schema-node" cx="620" cy="160" r="4"/>
-        <circle class="schema-node" cx="620" cy="420" r="4"/>
-        <circle class="schema-node" cx="620" cy="620" r="4"/>
-        <circle class="schema-node" cx="900" cy="160" r="4"/>
-        <circle class="schema-node" cx="820" cy="340" r="4"/>
-        <circle class="schema-node" cx="900" cy="520" r="4"/>
-        <circle class="schema-node-ring" cx="1080" cy="260" r="10"/>
-        <circle class="schema-node" cx="1080" cy="260" r="4"/>
-        <circle class="schema-node-ring" cx="1080" cy="340" r="10"/>
-        <circle class="schema-node" cx="1080" cy="340" r="4"/>
-        <circle class="schema-node-ring" cx="1080" cy="520" r="10"/>
-        <circle class="schema-node" cx="1080" cy="520" r="4"/>
-      </g>
-    </svg>
-    <div class="hero__veil"></div>
-  </div>
-  <div class="hero__content">
-    <div class="hero__label fade-up"><span data-i18n="hero.label1">Legal Operations Architect</span><span class="sep"></span><span data-i18n="hero.label2">Remote & Europe</span><span class="sep"></span><span data-i18n="hero.label3">Est. 2016</span></div>
-    <h1 class="hero__title fade-up delay-1">Rafael Montaner</h1>
-    <p class="hero__tag fade-up delay-2" data-i18n="hero.tag">I build the systems lawyers theorise about. Translating legal reality into engineering specifications that development teams can actually execute.</p>
-    <a href="#signup" class="hero__cta fade-up delay-3">
-      <span data-i18n="hero.cta">Start a project</span>
-      <span class="arrow">→</span>
-    </a>
-  </div>
-  <div class="hero__scroll fade-up delay-4">
-    <span data-i18n="hero.scroll">scroll</span>
-    <div class="hero__scrollline"></div>
-  </div>
-</section>
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Mobile Menu">
+  <a href="#approach" data-i18n="nav.approach">Approach</a>
+  <a href="#methodology" data-i18n="nav.methodology">Methodology</a>
+  <a href="#cases" data-i18n="nav.cases">Case Studies</a>
+  <a href="#capabilities" data-i18n="nav.capabilities">Capabilities</a>
+  <a href="#contact" data-i18n="nav.cta">Schedule Consultation</a>
+</div>
 
-<!-- ───────── Practices (Services) ───────── -->
-<section class="practices" id="practices">
-  <header class="section-head">
-    <span class="section-label fade-up" data-i18n="practices.label">02 · Services</span>
-    <h2 class="section-title fade-up delay-1" data-i18n-html="practices.title">Four ways<br><em>to bridge the gap.</em></h2>
-    <p class="section-lead fade-up delay-2" data-i18n="practices.lead">End-to-end legal operations — from strategy and architecture through to implementation, testing, and production deployment. I own the full cycle.</p>
-  </header>
-
-  <div class="practices__grid">
-    <article class="practice fade-up">
-      <div class="practice__num">— 01</div>
-      <h3 class="practice__name" data-i18n="practice1.name">AI & RAG</h3>
-      <p class="practice__tag"><em data-i18n="practice1.tag">architecture · to build, with care</em></p>
-      <p class="practice__desc" data-i18n="practice1.desc">Proprietary RAG architectures on client infrastructure. AI-powered legal workflows with full data sovereignty, GDPR compliance, and EU AI Act risk classification.</p>
-      <div class="practice__meta">
-        <span data-i18n="practice1.meta1">Enterprise</span>
-        <span>LLMs</span>
-        <span data-i18n="practice1.meta3">GDPR Ready</span>
+<main>
+  <!-- ─────────────────────────────────────────────────
+  HERO
+  ────────────────────────────────────────────────── -->
+  <section class="hero" id="top">
+    <div class="container grid-12">
+      <div class="hero__content">
+        <span class="hero__eyebrow reveal" data-i18n="hero.eyebrow">Legal Operations Architect</span>
+        <h1 class="hero__title reveal delay-1" data-i18n="hero.title">Translating legal complexity into executable engineering.</h1>
+        <p class="hero__sub reveal delay-2" data-i18n="hero.sub">Bridging the gap between legal operations, process architecture, and software implementation for enterprise legal departments.</p>
+        <a href="#contact" class="hero__cta reveal delay-3">
+          <span data-i18n="hero.cta">Schedule Consultation</span>
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
-    </article>
-
-    <article class="practice fade-up delay-1">
-      <div class="practice__num">— 02</div>
-      <h3 class="practice__name" data-i18n="practice2.name">Automation</h3>
-      <p class="practice__tag"><em data-i18n="practice2.tag">workflow · the path of least resistance</em></p>
-      <p class="practice__desc" data-i18n="practice2.desc">Workflow design and full automation — document generation, intake systems, matter pipelines. Complete ownership: logic design to production deployment.</p>
-      <div class="practice__meta">
-        <span data-i18n="practice2.meta1">80% Reduction</span>
-        <span>EJS</span>
-        <span>APIs</span>
-      </div>
-    </article>
-
-    <article class="practice fade-up">
-      <div class="practice__num">— 03</div>
-      <h3 class="practice__name" data-i18n="practice3.name">Strategy</h3>
-      <p class="practice__tag"><em data-i18n="practice3.tag">blueprint · to see the whole</em></p>
-      <p class="practice__desc" data-i18n="practice3.desc">Current-state assessment, technology roadmap, and prioritised implementation plan. From diagnosis to delivery-ready blueprint for legal departments.</p>
-      <div class="practice__meta">
-        <span>Agile</span>
-        <span>CLM</span>
-        <span>LPM</span>
-      </div>
-    </article>
-
-    <article class="practice fade-up delay-1">
-      <div class="practice__num">— 04</div>
-      <h3 class="practice__name" data-i18n="practice4.name">Translation</h3>
-      <p class="practice__tag"><em data-i18n="practice4.tag">bridge · to connect two sides</em></p>
-      <p class="practice__desc" data-i18n="practice4.desc">Translating legal requirements into engineering-ready specifications — BPMN diagrams, IF/THEN logic, and API blueprints for direct developer execution.</p>
-      <div class="practice__meta">
-        <span>BPMN</span>
-        <span data-i18n="practice4.meta2">Logic</span>
-        <span data-i18n="practice4.meta3">Specs</span>
-      </div>
-    </article>
-  </div>
-</section>
-
-<!-- ───────── Teachers (Approach) ───────── -->
-<section class="approach" id="approach">
-  <header class="section-head">
-    <span class="section-label fade-up" data-i18n="approach.label">03 · Approach</span>
-    <h2 class="section-title fade-up delay-1" data-i18n-html="approach.title">The principles<br><em>that hold the room.</em></h2>
-    <p class="section-lead fade-up delay-2" data-i18n="approach.lead">Three core beliefs built from eight years of practice. Hover over any card to read why I still build.</p>
-  </header>
-
-  <div class="approach__grid">
-    <article class="principle"
-      data-quote-en="I don't just advise on technology—I build it. Having shipped production legal software across three countries, I translate legal reality into engineering specifications that development teams can actually execute, and I hold the quality bar on both sides."
-      data-quote-es="No solo asesoro sobre tecnología: la construyo. Habiendo llevado a producción software legal en tres países, traduzco la realidad legal en especificaciones de ingeniería que los equipos de desarrollo pueden ejecutar, y mantengo el estándar de calidad en ambos lados."
-      data-quote-de="Ich berate nicht nur über Technologie – ich baue sie. Nachdem ich Rechtssoftware in drei Ländern produktiv eingesetzt habe, übersetze ich juristische Realität in technische Spezifikationen, die Entwicklerteams tatsächlich umsetzen können, und halte den Qualitätsanspruch auf beiden Seiten."
-      data-quote-ru="Я не просто консультирую по технологиям — я их создаю. Внедрив юридическое программное обеспечение в трёх странах, я перевожу юридическую реальность в инженерные спецификации, которые команды разработчиков могут реализовать, и слежу за качеством с обеих сторон.">
-      <div class="principle__mark">
-        <span class="mark-index">01</span>
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M22 16 L10 32 L22 48" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M42 16 L54 32 L42 48" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M36 12 L28 52" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="principle__body">
-        <h3 class="principle__name" data-i18n="principle1.name">Fluency</h3>
-        <div class="principle__role" data-i18n="principle1.role">Dual Expertise · 8+ yrs</div>
-        <div class="principle__quote-wrap">
-          <p class="principle__prompt" data-i18n="principle.prompt">hover to read my why</p>
-          <blockquote class="principle__quote"></blockquote>
-        </div>
-      </div>
-    </article>
-
-    <article class="principle"
-      data-quote-en="Before automating a workflow, you must understand it. I map the current-state, redesign the logic, and only then deploy technology. At Total Abogados, this approach cut succession processing time by eighty percent. The process is the product."
-      data-quote-es="Antes de automatizar un proceso, hay que entenderlo. Mapeo el estado actual, rediseño la lógica y solo entonces despliego la tecnología. En Total Abogados, este enfoque redujo el tiempo de tramitación de sucesiones en un ochenta por ciento. El proceso es el producto."
-      data-quote-de="Bevor man einen Arbeitsablauf automatisiert, muss man ihn verstehen. Ich erfasse den Ist-Zustand, gestalte die Logik neu und setze erst dann Technologie ein. Bei Total Abogados senkte dieser Ansatz die Bearbeitungszeit bei Erbschaftsverfahren um achtzig Prozent. Der Prozess ist das Produkt."
-      data-quote-ru="Прежде чем автоматизировать процесс, его нужно понять. Я описываю текущее состояние, перерабатываю логику и только потом внедряю технологию. В Total Abogados этот подход сократил время обработки наследственных дел на восемьдесят процентов. Процесс — это и есть продукт.">
-      <div class="principle__mark">
-        <span class="mark-index">02</span>
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <circle cx="12" cy="32" r="5"/>
-          <path d="M17 32 L34 32" stroke-linecap="round"/>
-          <circle cx="39" cy="32" r="5"/>
-          <path d="M44 32 L54 32 M48 27 L54 32 L48 37" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="principle__body">
-        <h3 class="principle__name" data-i18n="principle2.name">Process</h3>
-        <div class="principle__role" data-i18n="principle2.role">Legal Engineer · Enterprise</div>
-        <div class="principle__quote-wrap">
-          <p class="principle__prompt" data-i18n="principle.prompt">hover to read my why</p>
-          <blockquote class="principle__quote"></blockquote>
-        </div>
-      </div>
-    </article>
-
-    <article class="principle"
-      data-quote-en="AI governance isn't a roadblock; it's a blueprint. By classifying risk under the EU AI Act and embedding GDPR requirements from day one, we create systems that are not only powerful but legally sound and ready for enterprise deployment."
-      data-quote-es="La gobernanza de la IA no es un obstáculo, es un plano. Clasificando el riesgo conforme al Reglamento de IA de la UE e integrando los requisitos del RGPD desde el primer día, creamos sistemas potentes, jurídicamente sólidos y listos para el despliegue empresarial."
-      data-quote-de="KI-Governance ist kein Hindernis, sondern ein Bauplan. Durch die Risikoklassifizierung nach dem EU-KI-Gesetz und die Einbettung der DSGVO-Anforderungen von Anfang an schaffen wir Systeme, die nicht nur leistungsstark, sondern auch rechtssicher und unternehmensreif sind."
-      data-quote-ru="Управление ИИ — это не преграда, а чертёж. Классифицируя риски в соответствии с Законом ЕС об ИИ и закладывая требования GDPR с самого начала, мы создаём системы, которые не только мощные, но и юридически надёжные, готовые к корпоративному внедрению.">
-      <div class="principle__mark">
-        <span class="mark-index">03</span>
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M32 10 L52 18 L52 32 C52 44 43 51 32 55 C21 51 12 44 12 32 L12 18 Z" stroke-linejoin="round"/>
-          <path d="M23 32 L29 38 L41 24" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="principle__body">
-        <h3 class="principle__name" data-i18n="principle3.name">Compliance</h3>
-        <div class="principle__role" data-i18n="principle3.role">Governance · EU AI Act</div>
-        <div class="principle__quote-wrap">
-          <p class="principle__prompt" data-i18n="principle.prompt">hover to read my why</p>
-          <blockquote class="principle__quote"></blockquote>
-        </div>
-      </div>
-    </article>
-  </div>
-</section>
-
-<!-- ───────── Schedule (Track Record) ───────── -->
-<section class="schedule" id="schedule">
-  <header class="section-head">
-    <span class="section-label fade-up" data-i18n="schedule.label">04 · Track Record</span>
-    <h2 class="section-title fade-up delay-1" data-i18n-html="schedule.title">Where I've<br><em>delivered.</em></h2>
-    <p class="section-lead fade-up delay-2" data-i18n="schedule.lead">A career built at the intersection of legal practice and technical implementation. Tap a row to see the details.</p>
-  </header>
-
-  <div class="schedule__list fade-up delay-1">
-    <div class="sched-day-header">
-      <div data-i18n="schedule.h.year">Year</div>
-      <div data-i18n="schedule.h.company">Company</div>
-      <div data-i18n="schedule.h.role">Role</div>
-      <div data-i18n="schedule.h.location">Location</div>
-      <div data-i18n="schedule.h.stack">Stack</div>
-      <div></div>
     </div>
+    <div class="hero__meta reveal delay-3" id="heroMeta">
+      <strong data-i18n="hero.meta1.val">Enterprise Legal Operations</strong>
+      <span data-i18n="hero.meta2.val">Process Architecture & Engineering</span>
+    </div>
+  </section>
 
-    <div class="sched-row">
-      <div class="sched-row__main">
-        <div class="sched-day">2025</div>
-        <div class="sched-time" data-i18n="row1.company">Independent</div>
-        <div class="sched-class" data-i18n="row1.role">Legal Ops Consultant</div>
-        <div class="sched-location" data-i18n="row1.location">Remote · EU</div>
-        <div class="sched-focus">RAG · LLMs</div>
-        <div class="sched-expand">+</div>
+  <!-- ─────────────────────────────────────────────────
+  THE GAP (Implementation Philosophy)
+  ────────────────────────────────────────────────── -->
+  <section id="approach">
+    <div class="container grid-12 gap__layout">
+      <div class="gap__header reveal">
+        <span class="hero__eyebrow" data-i18n="gap.eyebrow">The Implementation Gap</span>
+        <h2 data-i18n="gap.title">Consulting firms diagnose. Vendors sell tools. I do the work in between.</h2>
       </div>
-      <dl class="sched-row__detail">
-        <div class="sched-detail__inner">
-          <dt data-i18n="schedule.dt.scope">Scope</dt><dd data-i18n-html="row1.scope">Enterprise RAG Architecture · <em>Global FMCG Corporation</em></dd>
-          <dt data-i18n="schedule.dt.stack">Stack</dt><dd data-i18n-html="row1.stack">LLMs, Vector DBs, Python, React. <em>GDPR & EU AI Act compliant.</em></dd>
-          <dt data-i18n="schedule.dt.outcome">Outcome</dt><dd data-i18n="row1.outcome">Full technical architecture, compliance framework, and Scrum delivery plan.</dd>
-        </div>
-      </dl>
-    </div>
-
-    <div class="sched-row">
-      <div class="sched-row__main">
-        <div class="sched-day">2023</div>
-        <div class="sched-time">WOW Legal</div>
-        <div class="sched-class" data-i18n="row2.role">Legal Engineer</div>
-        <div class="sched-location" data-i18n="row2.location">Chile · Spain</div>
-        <div class="sched-focus">React · Node</div>
-        <div class="sched-expand">+</div>
+      <div class="gap__intro reveal delay-1">
+        <p data-i18n="gap.lead">Enterprise legal departments do not lack strategy; they lack the engineering translation required to make legal reality match technical execution. I bridge that gap.</p>
       </div>
-      <dl class="sched-row__detail">
-        <div class="sched-detail__inner">
-          <dt data-i18n="schedule.dt.scope">Scope</dt><dd data-i18n-html="row2.scope">Product Design & Engineering · <em>Legal Apps for 3 Jurisdictions</em></dd>
-          <dt data-i18n="schedule.dt.stack">Stack</dt><dd data-i18n-html="row2.stack">React, Node.js, Full-stack development. <em>Plain language legal design.</em></dd>
-          <dt data-i18n="schedule.dt.outcome">Outcome</dt><dd data-i18n="row2.outcome">Designed/built Younomad — won Concurso de Innovación Jurídica 2025 (€10,000 prize).</dd>
-        </div>
-      </dl>
-    </div>
 
-    <div class="sched-row">
-      <div class="sched-row__main">
-        <div class="sched-day">2022</div>
-        <div class="sched-time">Total Abogados</div>
-        <div class="sched-class" data-i18n="row3.role">Automation Lead</div>
-        <div class="sched-location">Santiago</div>
-        <div class="sched-focus">EJS · APIs</div>
-        <div class="sched-expand">+</div>
+      <div class="gap__list" style="grid-column: 1 / 13;">
+        <article class="gap__item reveal">
+          <span class="gap__num">01 / Architecture</span>
+          <h3 data-i18n="gap.c1.h">Process & Logic Design</h3>
+          <p data-i18n="gap.c1.p">Mapping the current-state legal workflow, redesigning the logic (BPMN, IF/THEN), and defining the exact technology stack required for execution.</p>
+        </article>
+        <article class="gap__item reveal delay-1">
+          <span class="gap__num">02 / Translation</span>
+          <h3 data-i18n="gap.c2.h">Engineering Specifications</h3>
+          <p data-i18n="gap.c2.p">Converting legal risk, regulatory requirements (GDPR, EU AI Act), and operational logic into exact engineering blueprints for development teams.</p>
+        </article>
+        <article class="gap__item reveal delay-2">
+          <span class="gap__num">03 / Leadership</span>
+          <h3 data-i18n="gap.c3.h">Delivery to Production</h3>
+          <p data-i18n="gap.c3.p">Leading cross-functional teams (Legal, IT, Compliance) through Agile delivery, UAT governance, and final production sign-off.</p>
+        </article>
       </div>
-      <dl class="sched-row__detail">
-        <div class="sched-detail__inner">
-          <dt data-i18n="schedule.dt.scope">Scope</dt><dd data-i18n-html="row3.scope">Workflow Automation · <em>Intestate Succession & Document Gen</em></dd>
-          <dt data-i18n="schedule.dt.stack">Stack</dt><dd data-i18n-html="row3.stack">EJS, APIs, Real-time integrations. <em>100% digital adoption.</em></dd>
-          <dt data-i18n="schedule.dt.outcome">Outcome</dt><dd data-i18n="row3.outcome">80% time reduction (60 to 15 min per case). Co-developed TAPP Legal CLM platform.</dd>
-        </div>
-      </dl>
     </div>
+  </section>
 
-    <div class="sched-row">
-      <div class="sched-row__main">
-        <div class="sched-day">2016</div>
-        <div class="sched-time" data-i18n="row4.company">Private Practice</div>
-        <div class="sched-class" data-i18n="row4.role">Attorney</div>
-        <div class="sched-location">Santiago</div>
-        <div class="sched-focus" data-i18n="row4.focus">Civil · Labour</div>
-        <div class="sched-expand">+</div>
+  <!-- ─────────────────────────────────────────────────
+  METHODOLOGY
+  ────────────────────────────────────────────────── -->
+  <section id="methodology" style="background: var(--surface);">
+    <div class="container grid-12">
+      <div class="method__left reveal">
+        <span class="hero__eyebrow" data-i18n="method.eyebrow">Methodology</span>
+        <h2 data-i18n="method.title">An uncommon intersection of practice and engineering.</h2>
+        <p data-i18n="method.lead" style="margin-top: 2rem;">A licensed attorney with deep technical expertise. I naturally understand both legal reasoning and software architecture, allowing me to operate where most professionals cannot.</p>
       </div>
-      <dl class="sched-row__detail">
-        <div class="sched-detail__inner">
-          <dt data-i18n="schedule.dt.scope">Scope</dt><dd data-i18n-html="row4.scope">Legal Practice · <em>Trial Representation & Counsel</em></dd>
-          <dt data-i18n="schedule.dt.stack">Stack</dt><dd data-i18n-html="row4.stack">Litigation, Contracts, Labour Law. <em>Collective bargaining negotiations.</em></dd>
-          <dt data-i18n="schedule.dt.outcome">Outcome</dt><dd data-i18n="row4.outcome">Built foundational legal knowledge that now informs all system architecture.</dd>
+      <div class="method__right">
+        <div class="method__step reveal">
+          <span class="method__label">01</span>
+          <h3 class="method__title" data-i18n="method.s1.t">Intake & Assessment</h3>
+          <p class="method__desc" data-i18n="method.s1.d">Analyzing the current legal operational state, identifying bottlenecks, and defining the boundaries of regulatory compliance and technical feasibility.</p>
         </div>
-      </dl>
+        <div class="method__step reveal delay-1">
+          <span class="method__label">02</span>
+          <h3 class="method__title" data-i18n="method.s2.t">Process Modeling</h3>
+          <p class="method__desc" data-i18n="method.s2.d">Redesigning the legal workflow into a structured, automatable format. Defining business logic, conditional routes, and integration points with external systems.</p>
+        </div>
+        <div class="method__step reveal delay-2">
+          <span class="method__label">03</span>
+          <h3 class="method__title" data-i18n="method.s3.t">Engineering Translation</h3>
+          <p class="method__desc" data-i18n="method.s3.d">Writing functional specifications, API blueprints, and architecture diagrams that translate legal requirements into precise instructions for software development teams.</p>
+        </div>
+        <div class="method__step reveal delay-3">
+          <span class="method__label">04</span>
+          <h3 class="method__title" data-i18n="method.s4.t">Production Governance</h3>
+          <p class="method__desc" data-i18n="method.s4.d">Leading Agile delivery, managing UAT (User Acceptance Testing) with legal stakeholders, and ensuring the final system operates within the defined risk appetite.</p>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ───────── Contact ───────── -->
-<section class="signup" id="signup">
-  <div class="signup__inner">
-    <div class="signup__text">
-      <span class="section-label fade-up" data-i18n="signup.label">05 · Get in touch</span>
-      <h2 class="section-title fade-up delay-1" data-i18n-html="signup.title">Let's build<br><em>something that works.</em></h2>
-      <p class="section-lead fade-up delay-2" data-i18n="signup.lead">Available for legal operations roles, advisory engagements, and consulting projects. Open to remote and in-person engagements across Europe and Latin America.</p>
-      <ul class="signup__list fade-up delay-3">
-        <li data-i18n="signup.li1">Choose any scope, any stack, any jurisdiction.</li>
-        <li data-i18n="signup.li2">Architecture, automation, and governance — end-to-end.</li>
-        <li data-i18n="signup.li3">I will write you back within a day, by hand.</li>
-        <li data-i18n="signup.li4">Remote or on-site. Europe and LATAM.</li>
-      </ul>
+  <!-- ─────────────────────────────────────────────────
+  CASE STUDIES
+  ────────────────────────────────────────────────── -->
+  <section id="cases">
+    <div class="container">
+      <div class="reveal" style="margin-bottom: 6rem; max-width: 600px;">
+        <span class="hero__eyebrow" data-i18n="cases.eyebrow">Case Studies</span>
+        <h2 data-i18n="cases.title">Evidence of transformation.</h2>
+      </div>
+
+      <!-- Case 1: FMCG RAG -->
+      <article class="case-study reveal">
+        <div class="case__meta">
+          <span class="case__tag" data-i18n="case1.tag">Enterprise AI Implementation</span>
+          <h3 class="case__title" data-i18n="case1.title">Global FMCG Compliance Assistant</h3>
+        </div>
+        <div class="case__content">
+          <div class="case__details">
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.problem">Business Problem</h4>
+              <p data-i18n="case1.problem">A global FMCG corporation needed a way to query internal compliance documents across multiple jurisdictions without exposing sensitive data to external LLM APIs.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.architecture">Technical Architecture</h4>
+              <p data-i18n="case1.arch">Designed a proprietary Retrieval-Augmented Generation (RAG) architecture deployed entirely on client infrastructure, ensuring full data sovereignty.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.execution">Implementation Strategy</h4>
+              <p data-i18n="case1.exec">Defined the model selection rationale, GDPR compliance framework, EU AI Act risk classification, and Scrum delivery plan.</p>
+            </div>
+          </div>
+          <p class="case__outcome" data-i18n="case1.outcome">Delivered a complete implementation blueprint, bridging legal compliance requirements with engineering execution.</p>
+        </div>
+      </article>
+
+      <!-- Case 2: Total Abogados -->
+      <article class="case-study reveal delay-1">
+        <div class="case__meta">
+          <span class="case__tag" data-i18n="case2.tag">Process Automation</span>
+          <h3 class="case__title" data-i18n="case2.title">Intestate Succession Automation</h3>
+        </div>
+        <div class="case__content">
+          <div class="case__details">
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.problem">Business Problem</h4>
+              <p data-i18n="case2.problem">Manual processing of intestate succession cases took 60 minutes per file, involving complex multi-field forms and external fiscal data lookups.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.architecture">Technical Architecture</h4>
+              <p data-i18n="case2.arch">Digitized the Civil Registry's complex form logic and integrated real-time API sources for property valuations, economic unit rates, and tax calculations.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.execution">Implementation Strategy</h4>
+              <p data-i18n="case2.exec">Redesigned the end-to-end workflow, automating document generation for court submissions, deeds, and appeals.</p>
+            </div>
+          </div>
+          <p class="case__outcome" data-i18n="case2.outcome">Reduced processing time by 80% (60 to 15 minutes per case) and achieved 100% team adoption.</p>
+        </div>
+      </article>
     </div>
+  </section>
 
-    <form class="signup__form fade-up delay-2" onsubmit="event.preventDefault(); document.getElementById('submitBtn').querySelector('span').textContent = (window.i18nDict[window.currentLang]['form.thankyou']); this.querySelector('input,select,textarea').blur();">
-      <label>
-        <span data-i18n="form.name">Your name</span>
-        <input type="text" name="name" placeholder="First and last" data-i18n-placeholder="ph.name" required>
-      </label>
-      <label>
-        <span data-i18n="form.email">Email</span>
-        <input type="email" name="email" placeholder="you@company.com" data-i18n-placeholder="ph.email" required>
-      </label>
-      <label>
-        <span data-i18n="form.type">Engagement type</span>
-        <select name="type">
-          <option data-i18n="form.opt1">Legal Ops Strategy</option>
-          <option data-i18n="form.opt2">AI & RAG Implementation</option>
-          <option data-i18n="form.opt3">Process Automation</option>
-          <option data-i18n="form.opt4">Advisory & Governance</option>
-          <option data-i18n="form.opt5">Not sure — please advise</option>
-        </select>
-      </label>
-      <label>
-        <span><span data-i18n="form.details">Project details</span> <em style="font-style:italic;color:var(--ink-mute);text-transform:none;letter-spacing:0;font-size:11px;" data-i18n="form.optional">(optional)</em></span>
-        <textarea name="notes" rows="3" placeholder="Scope, timeline, what you are looking for..." data-i18n-placeholder="ph.notes"></textarea>
-      </label>
-      <button type="submit" class="signup__btn" id="submitBtn">
-        <span data-i18n="form.submit">Send message</span>
-        <span class="arrow">→</span>
-      </button>
-      <p class="signup__note" data-i18n="form.note">No automated replies. I will write you back personally within a day.</p>
-    </form>
-  </div>
-</section>
+  <!-- ─────────────────────────────────────────────────
+  CAPABILITIES
+  ────────────────────────────────────────────────── -->
+  <section id="capabilities" style="background: var(--surface);">
+    <div class="container">
+      <div class="caps__header reveal">
+        <span class="hero__eyebrow" data-i18n="caps.eyebrow">Capabilities</span>
+        <h2 data-i18n="caps.title">Structural implementation of legal technology.</h2>
+      </div>
+      <div class="caps__list">
+        <div class="caps__item reveal">
+          <span class="caps__num">— 01</span>
+          <h3 class="caps__title" data-i18n="caps.c1.t">AI & RAG Governance</h3>
+          <p class="caps__desc" data-i18n="caps.c1.d">Architecting proprietary RAG deployments on client infrastructure. Designing AI governance frameworks with EU AI Act risk classification, data sovereignty, and privacy-by-design integration.</p>
+          <span class="caps__arrow">→</span>
+        </div>
+        <div class="caps__item reveal delay-1">
+          <span class="caps__num">— 02</span>
+          <h3 class="caps__title" data-i18n="caps.c2.t">Enterprise Automation</h3>
+          <p class="caps__desc" data-i18n="caps.c2.d">End-to-end automation of legal workflows: from document generation and CLM platforms to complex matter pipelines and API integrations with external registries.</p>
+          <span class="caps__arrow">→</span>
+        </div>
+        <div class="caps__item reveal delay-2">
+          <span class="caps__num">— 03</span>
+          <h3 class="caps__title" data-i18n="caps.c3.t">Legal Product Thinking</h3>
+          <p class="caps__desc" data-i18n="caps.c3.d">Translating regulatory frameworks into scalable digital products. Managing the full lifecycle from requirements definition to production deployment and user adoption.</p>
+          <span class="caps__arrow">→</span>
+        </div>
+        <div class="caps__item reveal delay-3">
+          <span class="caps__num">— 04</span>
+          <h3 class="caps__title" data-i18n="caps.c4.t">Implementation Leadership</h3>
+          <p class="caps__desc" data-i18n="caps.c4.d">Bridging legal practice and software engineering. Managing cross-functional stakeholder alignment, Agile delivery plans, and UAT governance for enterprise rollouts.</p>
+          <span class="caps__arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- ───────── Footer ───────── -->
+  <!-- ─────────────────────────────────────────────────
+  CONTACT
+  ────────────────────────────────────────────────── -->
+  <section id="contact" class="contact">
+    <div class="container grid-12">
+      <div class="contact__grid reveal">
+        <span class="hero__eyebrow" style="justify-content: center;" data-i18n="contact.eyebrow">Engagements</span>
+        <h2 class="contact__title" data-i18n="contact.title">Build legal systems that work.</h2>
+        <p class="contact__lead" data-i18n="contact.lead">Available for advisory engagements and implementation leadership across Europe and Latin America. Let's discuss your architecture needs.</p>
+        
+        <form class="contact__form" id="contactForm" onsubmit="event.preventDefault(); this.querySelector('button').textContent = '✓ Request Received'; this.querySelector('button').style.background = 'var(--accent)';">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="name" data-i18n="form.name">Name</label>
+              <input type="text" id="name" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email" data-i18n="form.email">Email</label>
+              <input type="email" id="email" class="form-input" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="company" data-i18n="form.company">Company / Organization</label>
+            <input type="text" id="company" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="type" data-i18n="form.type">Engagement Type</label>
+            <select id="type" class="form-select">
+              <option data-i18n="form.opt1">Advisory & Governance</option>
+              <option data-i18n="form.opt2">Process Automation Architecture</option>
+              <option data-i18n="form.opt3">AI & RAG Implementation</option>
+              <option data-i18n="form.opt4">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message" data-i18n="form.message">Project Details</label>
+            <textarea id="message" class="form-textarea" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="form-submit" data-i18n="form.submit">Send Request →</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ─────────────────────────────────────────────────
+FOOTER
+───────────────────────────────────────────────── -->
 <footer>
-  <div class="footer__inner">
-    <div class="footer__brand">
-      <div class="footer-name">R. Montaner</div>
-      <p data-i18n="footer.desc">A legal operations architect bridging the gap between legal practice and engineering. Building production systems across Europe and Latin America.</p>
-    </div>
-    <div class="footer__col">
-      <h4 data-i18n="footer.h.contact">Contact</h4>
-      <ul>
-        <li>rafael.montaner@gmail.com</li>
-        <li>+56 9 4536 0692</li>
-        <li class="em">LinkedIn</li>
-        <li class="em">GitHub</li>
-      </ul>
-    </div>
-    <div class="footer__col">
-      <h4 data-i18n="footer.h.location">Location</h4>
-      <ul>
-        <li>Santiago, Chile</li>
-        <li>Madrid, Spain</li>
-        <li class="em" data-i18n="footer.remoteEurope">Remote · Europe</li>
-        <li class="em" data-i18n="footer.remoteLatam">Remote · LATAM</li>
-      </ul>
-    </div>
-    <div class="footer__col">
-      <h4 data-i18n="footer.h.quietly">Quietly</h4>
-      <ul>
-        <li data-i18n="footer.q1">No push notifications</li>
-        <li data-i18n="footer.q2">No automated funnels</li>
-        <li class="em" data-i18n="footer.q3">Just email</li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer__base">
-    <span>© Rafael Montaner · MMXVI</span>
-    <span data-i18n="footer.tagline">Law · Engineering · Architecture</span>
+  <div class="container footer__inner">
+    <span class="footer__copy" data-i18n="footer.copy">© Rafael Montaner · Legal Operations Architect</span>
+    <span class="footer__copy" data-i18n="footer.location">Europe & Latin America</span>
   </div>
 </footer>
 
-<!-- ───────── Status badge ───────── -->
-<div class="status-badge" id="statusBadge">
-  <span class="status-dot"></span>
-  <span class="status-text" data-i18n="status.text">Available for engagements</span>
-</div>
-
 <script>
 (() => {
+  /* ─────────────────────────────────────────────────
+  SCROLL ANIMATIONS (IntersectionObserver)
+  ───────────────────────────────────────────────── */
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+  
+  reveals.forEach(el => revealObserver.observe(el));
+
+  /* ─────────────────────────────────────────────────
+  HEADER SCROLL STATE & SUBTLE PARALLAX
+  ───────────────────────────────────────────────── */
+  const header = document.getElementById('header');
+  const heroMeta = document.getElementById('heroMeta');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ─────── Fade-up IntersectionObserver ─────── */
-  const fadeEls = document.querySelectorAll('.fade-up');
-  const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('is-in');
-        fadeObserver.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
-  fadeEls.forEach(el => fadeObserver.observe(el));
-
-  // Hero ones fire immediately
-  document.querySelectorAll('.hero .fade-up').forEach(el => {
-    setTimeout(() => el.classList.add('is-in'), 100);
-  });
-
-  /* ─────── Status badge reveal ─────── */
-  const statusBadge = document.getElementById('statusBadge');
-  setTimeout(() => statusBadge.classList.add('is-in'), 1200);
-
-  /* ─────── Principle quote typewriter on hover ─────── */
-  document.querySelectorAll('.principle').forEach(card => {
-    const quoteEl = card.querySelector('.principle__quote');
-    let timer = null;
-    let typing = false;
-
-    function clear() {
-      if (timer) { clearTimeout(timer); timer = null; }
-      typing = false;
-      quoteEl.innerHTML = '';
-      card.classList.remove('is-typing');
-    }
-
-    function type() {
-      if (typing) return;
-      const lang = window.currentLang || 'en';
-      const capLang = lang.charAt(0).toUpperCase() + lang.slice(1);
-      const full = card.dataset['quote' + capLang] || card.dataset.quoteEn;
-      typing = true;
-      card.classList.add('is-typing');
-      let i = 0;
-      quoteEl.innerHTML = '';
-      const cursor = document.createElement('span');
-      cursor.className = 'principle__quote-cursor';
-      quoteEl.appendChild(cursor);
-
-      function step() {
-        if (i < full.length && typing) {
-          const text = document.createTextNode(full.charAt(i));
-          quoteEl.insertBefore(text, cursor);
-          i++;
-          const delay = full.charAt(i - 1) === ' ' ? 18 : (full.charAt(i - 1) === ',' ? 60 : (/[\.—]/.test(full.charAt(i - 1)) ? 140 : 28));
-          timer = setTimeout(step, delay);
-        } else {
-          setTimeout(() => { if (cursor.parentNode) cursor.remove(); }, 800);
-          typing = false;
-        }
-      }
-      step();
-    }
-
-    card.addEventListener('mouseenter', type);
-    card.addEventListener('mouseleave', clear);
-    card.addEventListener('click', (e) => {
-      if (card.classList.contains('is-typing')) clear(); else type();
-    });
-  });
-
-  /* ─────── Schedule row expansion ─────── */
-  document.querySelectorAll('.sched-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const wasOpen = row.classList.contains('is-open');
-      document.querySelectorAll('.sched-row.is-open').forEach(r => r.classList.remove('is-open'));
-      row.classList.toggle('is-open', !wasOpen);
-    });
-  });
-
-  /* ─────── Pause hero motion when off-screen ─────── */
-  const heroBlueprint = document.querySelector('.hero__blueprint');
-  const heroMedia = document.querySelector('.hero__media');
-  const heroSection = document.querySelector('.hero');
-  if (heroBlueprint && heroSection && !reduceMotion) {
-    const heroObs = new IntersectionObserver((entries) => {
-      entries.forEach(e => heroBlueprint.style.animationPlayState = e.isIntersecting ? 'running' : 'paused');
-    }, { threshold: 0 });
-    heroObs.observe(heroSection);
-  }
-
-  /* ─────── Hero parallax: mouse drift + scroll depth ─────── */
-  if (heroMedia && heroSection && !reduceMotion) {
-    let mx = 0, my = 0, curX = 0, curY = 0;
-    heroSection.addEventListener('mousemove', (e) => {
-      const r = heroSection.getBoundingClientRect();
-      mx = ((e.clientX - r.left) / r.width - 0.5) * 22;
-      my = ((e.clientY - r.top) / r.height - 0.5) * 22;
-    });
-    function raf() {
-      curX += (mx - curX) * 0.06;
-      curY += (my - curY) * 0.06;
-      const scrollShift = Math.min(window.scrollY * 0.12, 60);
-      heroMedia.style.transform = `translate(${curX.toFixed(2)}px, ${(curY - scrollShift).toFixed(2)}px)`;
-      requestAnimationFrame(raf);
-    }
-    raf();
-  }
-
-  /* ─────── Topbar subtle condense on scroll ─────── */
-  const topbar = document.querySelector('.topbar');
+  let ticking = false;
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 60) topbar.style.background = 'rgba(244, 241, 234, 0.94)';
-    else topbar.style.background = 'rgba(244, 241, 234, 0.86)';
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y > 50) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+        
+        // Subtle parallax on hero meta
+        if (heroMeta && !reduceMotion && y < window.innerHeight) {
+          heroMeta.style.transform = `translateY(${y * 0.3}px)`;
+          heroMeta.style.opacity = Math.max(0, 1 - (y / 400));
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
   }, { passive: true });
 
-  /* ─────── i18n: translations + language switcher ─────── */
-  const translations = {
-  "en": {
-    "nav.services": "Services",
-    "nav.approach": "Approach",
-    "nav.track": "Track Record",
-    "nav.contact": "Contact",
-    "topbar.cta": "Get in touch",
-    "hero.label1": "Legal Operations Architect",
-    "hero.label2": "Remote & Europe",
-    "hero.label3": "Est. 2016",
-    "hero.tag": "I build the systems lawyers theorise about. Translating legal reality into engineering specifications that development teams can actually execute.",
-    "hero.cta": "Start a project",
-    "hero.scroll": "scroll",
-    "practices.label": "02 · Services",
-    "practices.title": "Four ways<br><em>to bridge the gap.</em>",
-    "practices.lead": "End-to-end legal operations — from strategy and architecture through to implementation, testing, and production deployment. I own the full cycle.",
-    "practice1.name": "AI & RAG",
-    "practice1.tag": "architecture · to build, with care",
-    "practice1.desc": "Proprietary RAG architectures on client infrastructure. AI-powered legal workflows with full data sovereignty, GDPR compliance, and EU AI Act risk classification.",
-    "practice1.meta1": "Enterprise",
-    "practice1.meta3": "GDPR Ready",
-    "practice2.name": "Automation",
-    "practice2.tag": "workflow · the path of least resistance",
-    "practice2.desc": "Workflow design and full automation — document generation, intake systems, matter pipelines. Complete ownership: logic design to production deployment.",
-    "practice2.meta1": "80% Reduction",
-    "practice3.name": "Strategy",
-    "practice3.tag": "blueprint · to see the whole",
-    "practice3.desc": "Current-state assessment, technology roadmap, and prioritised implementation plan. From diagnosis to delivery-ready blueprint for legal departments.",
-    "practice4.name": "Translation",
-    "practice4.tag": "bridge · to connect two sides",
-    "practice4.desc": "Translating legal requirements into engineering-ready specifications — BPMN diagrams, IF/THEN logic, and API blueprints for direct developer execution.",
-    "practice4.meta2": "Logic",
-    "practice4.meta3": "Specs",
-    "approach.label": "03 · Approach",
-    "approach.title": "The principles<br><em>that hold the room.</em>",
-    "approach.lead": "Three core beliefs built from eight years of practice. Hover over any card to read why I still build.",
-    "principle1.name": "Fluency",
-    "principle1.role": "Dual Expertise · 8+ yrs",
-    "principle2.name": "Process",
-    "principle2.role": "Legal Engineer · Enterprise",
-    "principle3.name": "Compliance",
-    "principle3.role": "Governance · EU AI Act",
-    "principle.prompt": "hover to read my why",
-    "schedule.label": "04 · Track Record",
-    "schedule.title": "Where I've<br><em>delivered.</em>",
-    "schedule.lead": "A career built at the intersection of legal practice and technical implementation. Tap a row to see the details.",
-    "schedule.h.year": "Year",
-    "schedule.h.company": "Company",
-    "schedule.h.role": "Role",
-    "schedule.h.location": "Location",
-    "schedule.h.stack": "Stack",
-    "schedule.dt.scope": "Scope",
-    "schedule.dt.stack": "Stack",
-    "schedule.dt.outcome": "Outcome",
-    "row1.company": "Independent",
-    "row1.role": "Legal Ops Consultant",
-    "row1.location": "Remote · EU",
-    "row1.scope": "Enterprise RAG Architecture · <em>Global FMCG Corporation</em>",
-    "row1.stack": "LLMs, Vector DBs, Python, React. <em>GDPR & EU AI Act compliant.</em>",
-    "row1.outcome": "Full technical architecture, compliance framework, and Scrum delivery plan.",
-    "row2.role": "Legal Engineer",
-    "row2.location": "Chile · Spain",
-    "row2.scope": "Product Design & Engineering · <em>Legal Apps for 3 Jurisdictions</em>",
-    "row2.stack": "React, Node.js, Full-stack development. <em>Plain language legal design.</em>",
-    "row2.outcome": "Designed/built Younomad — won Concurso de Innovación Jurídica 2025 (€10,000 prize).",
-    "row3.role": "Automation Lead",
-    "row3.scope": "Workflow Automation · <em>Intestate Succession & Document Gen</em>",
-    "row3.stack": "EJS, APIs, Real-time integrations. <em>100% digital adoption.</em>",
-    "row3.outcome": "80% time reduction (60 to 15 min per case). Co-developed TAPP Legal CLM platform.",
-    "row4.company": "Private Practice",
-    "row4.role": "Attorney",
-    "row4.focus": "Civil · Labour",
-    "row4.scope": "Legal Practice · <em>Trial Representation & Counsel</em>",
-    "row4.stack": "Litigation, Contracts, Labour Law. <em>Collective bargaining negotiations.</em>",
-    "row4.outcome": "Built foundational legal knowledge that now informs all system architecture.",
-    "signup.label": "05 · Get in touch",
-    "signup.title": "Let's build<br><em>something that works.</em>",
-    "signup.lead": "Available for legal operations roles, advisory engagements, and consulting projects. Open to remote and in-person engagements across Europe and Latin America.",
-    "signup.li1": "Choose any scope, any stack, any jurisdiction.",
-    "signup.li2": "Architecture, automation, and governance — end-to-end.",
-    "signup.li3": "I will write you back within a day, by hand.",
-    "signup.li4": "Remote or on-site. Europe and LATAM.",
-    "form.name": "Your name",
-    "form.email": "Email",
-    "form.type": "Engagement type",
-    "form.opt1": "Legal Ops Strategy",
-    "form.opt2": "AI & RAG Implementation",
-    "form.opt3": "Process Automation",
-    "form.opt4": "Advisory & Governance",
-    "form.opt5": "Not sure — please advise",
-    "form.details": "Project details",
-    "form.optional": "(optional)",
-    "ph.name": "First and last",
-    "ph.email": "you@company.com",
-    "ph.notes": "Scope, timeline, what you are looking for...",
-    "form.submit": "Send message",
-    "form.note": "No automated replies. I will write you back personally within a day.",
-    "form.thankyou": "thank you — I will reply shortly",
-    "footer.desc": "A legal operations architect bridging the gap between legal practice and engineering. Building production systems across Europe and Latin America.",
-    "footer.h.contact": "Contact",
-    "footer.h.location": "Location",
-    "footer.remoteEurope": "Remote · Europe",
-    "footer.remoteLatam": "Remote · LATAM",
-    "footer.h.quietly": "Quietly",
-    "footer.q1": "No push notifications",
-    "footer.q2": "No automated funnels",
-    "footer.q3": "Just email",
-    "footer.tagline": "Law · Engineering · Architecture",
-    "status.text": "Available for engagements"
-  },
-  "es": {
-    "nav.services": "Servicios",
-    "nav.approach": "Enfoque",
-    "nav.track": "Trayectoria",
-    "nav.contact": "Contacto",
-    "topbar.cta": "Hablemos",
-    "hero.label1": "Arquitecto de Operaciones Legales",
-    "hero.label2": "Remoto y Europa",
-    "hero.label3": "Desde 2016",
-    "hero.tag": "Construyo los sistemas que otros abogados solo imaginan. Traduzco la realidad legal en especificaciones de ingeniería que los equipos de desarrollo pueden ejecutar.",
-    "hero.cta": "Iniciar un proyecto",
-    "hero.scroll": "desplázate",
-    "practices.label": "02 · Servicios",
-    "practices.title": "Cuatro formas<br><em>de unir los mundos.</em>",
-    "practices.lead": "Operaciones legales de extremo a extremo — desde la estrategia y la arquitectura hasta la implementación, las pruebas y el despliegue en producción. Gestiono todo el ciclo.",
-    "practice1.name": "IA y RAG",
-    "practice1.tag": "arquitectura · construir con cuidado",
-    "practice1.desc": "Arquitecturas RAG propias sobre la infraestructura del cliente. Flujos legales con IA, soberanía total de los datos, cumplimiento del RGPD y clasificación de riesgo según el Reglamento de IA de la UE.",
-    "practice1.meta1": "Enterprise",
-    "practice1.meta3": "RGPD listo",
-    "practice2.name": "Automatización",
-    "practice2.tag": "flujo de trabajo · el camino de menor resistencia",
-    "practice2.desc": "Diseño de flujos y automatización completa: generación de documentos, sistemas de intake, pipelines de expedientes. Responsabilidad total: del diseño de la lógica al despliegue en producción.",
-    "practice2.meta1": "80% de reducción",
-    "practice3.name": "Estrategia",
-    "practice3.tag": "plano · para ver el conjunto",
-    "practice3.desc": "Diagnóstico del estado actual, hoja de ruta tecnológica y plan de implementación priorizado. Del diagnóstico al plano listo para ejecutar en departamentos legales.",
-    "practice4.name": "Traducción",
-    "practice4.tag": "puente · para conectar ambos lados",
-    "practice4.desc": "Traduzco requisitos legales en especificaciones listas para ingeniería: diagramas BPMN, lógica SI/ENTONCES y planos de API para que los desarrolladores ejecuten directamente.",
-    "practice4.meta2": "Lógica",
-    "practice4.meta3": "Especificaciones",
-    "approach.label": "03 · Enfoque",
-    "approach.title": "Los principios<br><em>que sostienen todo.</em>",
-    "approach.lead": "Tres convicciones construidas en ocho años de práctica. Pasa el cursor sobre cada tarjeta para leer por qué sigo construyendo.",
-    "principle1.name": "Fluidez",
-    "principle1.role": "Doble Experiencia · 8+ años",
-    "principle2.name": "Proceso",
-    "principle2.role": "Ingeniero Legal · Enterprise",
-    "principle3.name": "Cumplimiento",
-    "principle3.role": "Gobernanza · Reglamento de IA de la UE",
-    "principle.prompt": "pasa el cursor para leer mi porqué",
-    "schedule.label": "04 · Trayectoria",
-    "schedule.title": "Dónde he<br><em>generado resultados.</em>",
-    "schedule.lead": "Una carrera construida en la intersección entre la práctica legal y la implementación técnica. Toca una fila para ver los detalles.",
-    "schedule.h.year": "Año",
-    "schedule.h.company": "Empresa",
-    "schedule.h.role": "Rol",
-    "schedule.h.location": "Ubicación",
-    "schedule.h.stack": "Stack",
-    "schedule.dt.scope": "Alcance",
-    "schedule.dt.stack": "Stack",
-    "schedule.dt.outcome": "Resultado",
-    "row1.company": "Independiente",
-    "row1.role": "Consultor de Legal Ops",
-    "row1.location": "Remoto · UE",
-    "row1.scope": "Arquitectura RAG empresarial · <em>Corporación global de FMCG</em>",
-    "row1.stack": "LLMs, bases vectoriales, Python, React. <em>Conforme al RGPD y al Reglamento de IA de la UE.</em>",
-    "row1.outcome": "Arquitectura técnica completa, marco de cumplimiento y plan de entrega ágil (Scrum).",
-    "row2.role": "Ingeniero Legal",
-    "row2.location": "Chile · España",
-    "row2.scope": "Diseño e ingeniería de producto · <em>Apps legales para 3 jurisdicciones</em>",
-    "row2.stack": "React, Node.js, desarrollo full-stack. <em>Diseño legal en lenguaje claro.</em>",
-    "row2.outcome": "Diseñé y construí Younomad — ganador del Concurso de Innovación Jurídica 2025 (premio de 10.000 €).",
-    "row3.role": "Líder de Automatización",
-    "row3.scope": "Automatización de procesos · <em>Sucesión intestada y generación documental</em>",
-    "row3.stack": "EJS, APIs, integraciones en tiempo real. <em>100% de adopción digital.</em>",
-    "row3.outcome": "Reducción del 80% en el tiempo (de 60 a 15 min por caso). Co-desarrollé la plataforma CLM TAPP Legal.",
-    "row4.company": "Práctica privada",
-    "row4.role": "Abogado",
-    "row4.focus": "Civil · Laboral",
-    "row4.scope": "Práctica legal · <em>Representación en juicio y asesoría</em>",
-    "row4.stack": "Litigios, contratos, derecho laboral. <em>Negociaciones colectivas.</em>",
-    "row4.outcome": "Construí la base jurídica que hoy sustenta toda la arquitectura de mis sistemas.",
-    "signup.label": "05 · Hablemos",
-    "signup.title": "Construyamos<br><em>algo que funcione.</em>",
-    "signup.lead": "Disponible para roles de operaciones legales, asesorías y proyectos de consultoría. Abierto a colaborar en remoto o presencial en Europa y Latinoamérica.",
-    "signup.li1": "Cualquier alcance, cualquier stack, cualquier jurisdicción.",
-    "signup.li2": "Arquitectura, automatización y gobernanza — de principio a fin.",
-    "signup.li3": "Te responderé en menos de un día, personalmente.",
-    "signup.li4": "Remoto o presencial. Europa y LATAM.",
-    "form.name": "Tu nombre",
-    "form.email": "Correo electrónico",
-    "form.type": "Tipo de colaboración",
-    "form.opt1": "Estrategia de Legal Ops",
-    "form.opt2": "Implementación de IA y RAG",
-    "form.opt3": "Automatización de procesos",
-    "form.opt4": "Asesoría y gobernanza",
-    "form.opt5": "No estoy seguro — asesórame",
-    "form.details": "Detalles del proyecto",
-    "form.optional": "(opcional)",
-    "ph.name": "Nombre y apellido",
-    "ph.email": "tu@empresa.com",
-    "ph.notes": "Alcance, plazos, qué estás buscando...",
-    "form.submit": "Enviar mensaje",
-    "form.note": "Sin respuestas automáticas. Te escribiré personalmente en menos de un día.",
-    "form.thankyou": "gracias — te responderé pronto",
-    "footer.desc": "Un arquitecto de operaciones legales que conecta la práctica jurídica con la ingeniería. Construyo sistemas en producción en Europa y Latinoamérica.",
-    "footer.h.contact": "Contacto",
-    "footer.h.location": "Ubicación",
-    "footer.remoteEurope": "Remoto · Europa",
-    "footer.remoteLatam": "Remoto · LATAM",
-    "footer.h.quietly": "En voz baja",
-    "footer.q1": "Sin notificaciones push",
-    "footer.q2": "Sin embudos automatizados",
-    "footer.q3": "Solo correo electrónico",
-    "footer.tagline": "Derecho · Ingeniería · Arquitectura",
-    "status.text": "Disponible para nuevos proyectos"
-  },
-  "de": {
-    "nav.services": "Leistungen",
-    "nav.approach": "Ansatz",
-    "nav.track": "Werdegang",
-    "nav.contact": "Kontakt",
-    "topbar.cta": "Kontakt aufnehmen",
-    "hero.label1": "Legal Operations Architect",
-    "hero.label2": "Remote & Europa",
-    "hero.label3": "Seit 2016",
-    "hero.tag": "Ich baue die Systeme, über die andere Juristen nur reden. Ich übersetze juristische Realität in technische Spezifikationen, die Entwicklerteams tatsächlich umsetzen können.",
-    "hero.cta": "Projekt starten",
-    "hero.scroll": "scrollen",
-    "practices.label": "02 · Leistungen",
-    "practices.title": "Vier Wege,<br><em>die Lücke zu schließen.</em>",
-    "practices.lead": "Legal Operations von Anfang bis Ende — von Strategie und Architektur über die Umsetzung und das Testing bis zum produktiven Einsatz. Ich verantworte den gesamten Zyklus.",
-    "practice1.name": "KI & RAG",
-    "practice1.tag": "Architektur · mit Sorgfalt bauen",
-    "practice1.desc": "Eigene RAG-Architekturen auf der Infrastruktur des Kunden. KI-gestützte Rechtsabläufe mit voller Datensouveränität, DSGVO-Konformität und Risikoklassifizierung nach dem EU-KI-Gesetz.",
-    "practice1.meta1": "Enterprise",
-    "practice1.meta3": "DSGVO-konform",
-    "practice2.name": "Automatisierung",
-    "practice2.tag": "Workflow · der Weg des geringsten Widerstands",
-    "practice2.desc": "Workflow-Design und vollständige Automatisierung — Dokumentengenerierung, Intake-Systeme, Fallpipelines. Volle Verantwortung: von der Logik bis zum produktiven Einsatz.",
-    "practice2.meta1": "80 % Reduktion",
-    "practice3.name": "Strategie",
-    "practice3.tag": "Bauplan · das Ganze sehen",
-    "practice3.desc": "Bestandsaufnahme, Technologie-Roadmap und priorisierter Umsetzungsplan. Von der Diagnose bis zum umsetzungsreifen Bauplan für Rechtsabteilungen.",
-    "practice4.name": "Übersetzung",
-    "practice4.tag": "Brücke · beide Seiten verbinden",
-    "practice4.desc": "Ich übersetze juristische Anforderungen in entwicklungsreife Spezifikationen — BPMN-Diagramme, WENN/DANN-Logik und API-Baupläne zur direkten Umsetzung durch Entwickler.",
-    "practice4.meta2": "Logik",
-    "practice4.meta3": "Spezifikationen",
-    "approach.label": "03 · Ansatz",
-    "approach.title": "Die Prinzipien,<br><em>die alles zusammenhalten.</em>",
-    "approach.lead": "Drei Grundüberzeugungen aus acht Jahren Praxis. Fahre über eine Karte, um zu lesen, warum ich immer noch baue.",
-    "principle1.name": "Sprachgewandtheit",
-    "principle1.role": "Doppelte Expertise · 8+ Jahre",
-    "principle2.name": "Prozess",
-    "principle2.role": "Legal Engineer · Enterprise",
-    "principle3.name": "Compliance",
-    "principle3.role": "Governance · EU-KI-Gesetz",
-    "principle.prompt": "zum Lesen mit der Maus darüberfahren",
-    "schedule.label": "04 · Werdegang",
-    "schedule.title": "Wo ich<br><em>geliefert habe.</em>",
-    "schedule.lead": "Eine Karriere an der Schnittstelle von juristischer Praxis und technischer Umsetzung. Klicke auf eine Zeile für Details.",
-    "schedule.h.year": "Jahr",
-    "schedule.h.company": "Unternehmen",
-    "schedule.h.role": "Rolle",
-    "schedule.h.location": "Standort",
-    "schedule.h.stack": "Stack",
-    "schedule.dt.scope": "Umfang",
-    "schedule.dt.stack": "Stack",
-    "schedule.dt.outcome": "Ergebnis",
-    "row1.company": "Selbstständig",
-    "row1.role": "Legal-Ops-Berater",
-    "row1.location": "Remote · EU",
-    "row1.scope": "Enterprise-RAG-Architektur · <em>Globaler FMCG-Konzern</em>",
-    "row1.stack": "LLMs, Vektordatenbanken, Python, React. <em>DSGVO- und EU-KI-Gesetz-konform.</em>",
-    "row1.outcome": "Vollständige technische Architektur, Compliance-Rahmenwerk und agiler Lieferplan (Scrum).",
-    "row2.role": "Legal Engineer",
-    "row2.location": "Chile · Spanien",
-    "row2.scope": "Produktdesign & Engineering · <em>Rechts-Apps für 3 Rechtsordnungen</em>",
-    "row2.stack": "React, Node.js, Full-Stack-Entwicklung. <em>Rechtsdesign in einfacher Sprache.</em>",
-    "row2.outcome": "Younomad entworfen und gebaut — Gewinner des Concurso de Innovación Jurídica 2025 (10.000-€-Preis).",
-    "row3.role": "Automation Lead",
-    "row3.scope": "Workflow-Automatisierung · <em>Gesetzliche Erbfolge & Dokumentenerstellung</em>",
-    "row3.stack": "EJS, APIs, Echtzeit-Integrationen. <em>100 % digitale Nutzung.</em>",
-    "row3.outcome": "80 % Zeitersparnis (60 auf 15 Minuten pro Fall). Mitentwicklung der CLM-Plattform TAPP Legal.",
-    "row4.company": "Eigene Kanzlei",
-    "row4.role": "Rechtsanwalt",
-    "row4.focus": "Zivilrecht · Arbeitsrecht",
-    "row4.scope": "Anwaltliche Praxis · <em>Prozessvertretung & Beratung</em>",
-    "row4.stack": "Prozessführung, Verträge, Arbeitsrecht. <em>Tarifverhandlungen.</em>",
-    "row4.outcome": "Habe das juristische Fundament aufgebaut, das heute jede Systemarchitektur trägt.",
-    "signup.label": "05 · Kontakt aufnehmen",
-    "signup.title": "Lass uns etwas bauen,<br><em>das funktioniert.</em>",
-    "signup.lead": "Verfügbar für Positionen im Legal-Operations-Bereich, Beratungsmandate und Consulting-Projekte. Offen für Remote- und Vor-Ort-Einsätze in Europa und Lateinamerika.",
-    "signup.li1": "Jeder Umfang, jeder Stack, jede Rechtsordnung.",
-    "signup.li2": "Architektur, Automatisierung und Governance — von Anfang bis Ende.",
-    "signup.li3": "Ich melde mich persönlich innerhalb eines Tages zurück.",
-    "signup.li4": "Remote oder vor Ort. Europa und Lateinamerika.",
-    "form.name": "Dein Name",
-    "form.email": "E-Mail",
-    "form.type": "Art der Zusammenarbeit",
-    "form.opt1": "Legal-Ops-Strategie",
-    "form.opt2": "KI- & RAG-Implementierung",
-    "form.opt3": "Prozessautomatisierung",
-    "form.opt4": "Beratung & Governance",
-    "form.opt5": "Bin mir nicht sicher — bitte beraten",
-    "form.details": "Projektdetails",
-    "form.optional": "(optional)",
-    "ph.name": "Vor- und Nachname",
-    "ph.email": "du@unternehmen.de",
-    "ph.notes": "Umfang, Zeitplan, wonach du suchst...",
-    "form.submit": "Nachricht senden",
-    "form.note": "Keine automatischen Antworten. Ich melde mich persönlich innerhalb eines Tages.",
-    "form.thankyou": "danke — ich melde mich in Kürze",
-    "footer.desc": "Ein Legal Operations Architect, der juristische Praxis und Softwareentwicklung verbindet. Ich baue produktive Systeme in Europa und Lateinamerika.",
-    "footer.h.contact": "Kontakt",
-    "footer.h.location": "Standort",
-    "footer.remoteEurope": "Remote · Europa",
-    "footer.remoteLatam": "Remote · Lateinamerika",
-    "footer.h.quietly": "Im Stillen",
-    "footer.q1": "Keine Push-Benachrichtigungen",
-    "footer.q2": "Keine automatisierten Funnels",
-    "footer.q3": "Nur E-Mail",
-    "footer.tagline": "Recht · Engineering · Architektur",
-    "status.text": "Verfügbar für neue Projekte"
-  },
-  "ru": {
-    "nav.services": "Услуги",
-    "nav.approach": "Подход",
-    "nav.track": "Опыт работы",
-    "nav.contact": "Контакты",
-    "topbar.cta": "Связаться",
-    "hero.label1": "Архитектор юридических операций",
-    "hero.label2": "Удалённо и Европа",
-    "hero.label3": "С 2016 года",
-    "hero.tag": "Я создаю системы, о которых другие юристы только рассуждают. Перевожу юридическую реальность в инженерные спецификации, которые команды разработчиков реально могут реализовать.",
-    "hero.cta": "Начать проект",
-    "hero.scroll": "прокрутите",
-    "practices.label": "02 · Услуги",
-    "practices.title": "Четыре способа<br><em>навести мосты.</em>",
-    "practices.lead": "Юридические операции полного цикла — от стратегии и архитектуры до внедрения, тестирования и запуска в продакшн. Я веду весь процесс от начала до конца.",
-    "practice1.name": "ИИ и RAG",
-    "practice1.tag": "архитектура · строить бережно",
-    "practice1.desc": "Собственные RAG-архитектуры на инфраструктуре клиента. Юридические процессы на основе ИИ с полным суверенитетом данных, соответствием GDPR и классификацией риска по Закону ЕС об ИИ.",
-    "practice1.meta1": "Enterprise",
-    "practice1.meta3": "Готово к GDPR",
-    "practice2.name": "Автоматизация",
-    "practice2.tag": "рабочий процесс · путь наименьшего сопротивления",
-    "practice2.desc": "Проектирование и полная автоматизация процессов — генерация документов, системы приёма заявок, конвейеры дел. Полная ответственность: от логики до продакшн-развёртывания.",
-    "practice2.meta1": "Сокращение на 80%",
-    "practice3.name": "Стратегия",
-    "practice3.tag": "чертёж · увидеть целое",
-    "practice3.desc": "Оценка текущего состояния, технологическая дорожная карта и приоритизированный план внедрения. От диагностики до готового к реализации чертежа для юридических департаментов.",
-    "practice4.name": "Перевод",
-    "practice4.tag": "мост · соединить обе стороны",
-    "practice4.desc": "Перевожу юридические требования в спецификации, готовые для разработки, — BPMN-диаграммы, логику ЕСЛИ/ТО и API-чертежи для прямого исполнения разработчиками.",
-    "practice4.meta2": "Логика",
-    "practice4.meta3": "Спецификации",
-    "approach.label": "03 · Подход",
-    "approach.title": "Принципы,<br><em>на которых всё держится.</em>",
-    "approach.lead": "Три основных убеждения, сформированных за восемь лет практики. Наведите курсор на карточку, чтобы узнать, почему я всё ещё строю.",
-    "principle1.name": "Свобода владения",
-    "principle1.role": "Двойная экспертиза · 8+ лет",
-    "principle2.name": "Процесс",
-    "principle2.role": "Legal Engineer · Enterprise",
-    "principle3.name": "Соответствие",
-    "principle3.role": "Governance · Закон ЕС об ИИ",
-    "principle.prompt": "наведите курсор, чтобы узнать почему",
-    "schedule.label": "04 · Опыт работы",
-    "schedule.title": "Где я<br><em>приносил результат.</em>",
-    "schedule.lead": "Карьера на стыке юридической практики и технической реализации. Нажмите на строку, чтобы увидеть детали.",
-    "schedule.h.year": "Год",
-    "schedule.h.company": "Компания",
-    "schedule.h.role": "Роль",
-    "schedule.h.location": "Локация",
-    "schedule.h.stack": "Стек",
-    "schedule.dt.scope": "Задача",
-    "schedule.dt.stack": "Стек",
-    "schedule.dt.outcome": "Результат",
-    "row1.company": "Независимый консультант",
-    "row1.role": "Консультант по Legal Ops",
-    "row1.location": "Удалённо · ЕС",
-    "row1.scope": "Корпоративная RAG-архитектура · <em>Глобальная FMCG-корпорация</em>",
-    "row1.stack": "LLM, векторные базы данных, Python, React. <em>Соответствие GDPR и Закону ЕС об ИИ.</em>",
-    "row1.outcome": "Полная техническая архитектура, комплаенс-фреймворк и план поставки по Scrum.",
-    "row2.role": "Legal Engineer",
-    "row2.location": "Чили · Испания",
-    "row2.scope": "Проектирование продукта и разработка · <em>Юридические приложения для 3 юрисдикций</em>",
-    "row2.stack": "React, Node.js, full-stack разработка. <em>Юридический дизайн на простом языке.</em>",
-    "row2.outcome": "Спроектировал и создал Younomad — победитель Concurso de Innovación Jurídica 2025 (приз 10 000 €).",
-    "row3.role": "Руководитель автоматизации",
-    "row3.scope": "Автоматизация процессов · <em>Наследование по закону и генерация документов</em>",
-    "row3.stack": "EJS, API, интеграции в реальном времени. <em>100% цифровое внедрение.</em>",
-    "row3.outcome": "Сокращение времени на 80% (с 60 до 15 минут на дело). Совместная разработка CLM-платформы TAPP Legal.",
-    "row4.company": "Частная практика",
-    "row4.role": "Адвокат",
-    "row4.focus": "Гражданское · Трудовое право",
-    "row4.scope": "Юридическая практика · <em>Представительство в суде и консультирование</em>",
-    "row4.stack": "Судебные споры, договоры, трудовое право. <em>Коллективные переговоры.</em>",
-    "row4.outcome": "Заложил юридический фундамент, который сегодня лежит в основе всей архитектуры моих систем.",
-    "signup.label": "05 · Связаться",
-    "signup.title": "Давайте построим<br><em>то, что работает.</em>",
-    "signup.lead": "Открыт для позиций в области юридических операций, консультационных проектов и партнёрств. Готов к удалённой и очной работе в Европе и Латинской Америке.",
-    "signup.li1": "Любой масштаб, любой стек, любая юрисдикция.",
-    "signup.li2": "Архитектура, автоматизация и управление — от начала до конца.",
-    "signup.li3": "Отвечу лично в течение дня.",
-    "signup.li4": "Удалённо или очно. Европа и Латинская Америка.",
-    "form.name": "Ваше имя",
-    "form.email": "Эл. почта",
-    "form.type": "Тип сотрудничества",
-    "form.opt1": "Стратегия Legal Ops",
-    "form.opt2": "Внедрение ИИ и RAG",
-    "form.opt3": "Автоматизация процессов",
-    "form.opt4": "Консультации и управление",
-    "form.opt5": "Не уверен — посоветуйте",
-    "form.details": "Детали проекта",
-    "form.optional": "(необязательно)",
-    "ph.name": "Имя и фамилия",
-    "ph.email": "you@company.com",
-    "ph.notes": "Масштаб, сроки, что вы ищете...",
-    "form.submit": "Отправить сообщение",
-    "form.note": "Без автоответов. Я лично отвечу в течение дня.",
-    "form.thankyou": "спасибо — скоро отвечу",
-    "footer.desc": "Архитектор юридических операций, соединяющий юридическую практику и инженерию. Создаю рабочие системы в Европе и Латинской Америке.",
-    "footer.h.contact": "Контакты",
-    "footer.h.location": "Локация",
-    "footer.remoteEurope": "Удалённо · Европа",
-    "footer.remoteLatam": "Удалённо · Лат. Америка",
-    "footer.h.quietly": "Без лишнего шума",
-    "footer.q1": "Без push-уведомлений",
-    "footer.q2": "Без автоворонок",
-    "footer.q3": "Только почта",
-    "footer.tagline": "Право · Инженерия · Архитектура",
-    "status.text": "Открыт для новых проектов"
+  /* ─────────────────────────────────────────────────
+  MOBILE MENU LOGIC
+  ───────────────────────────────────────────────── */
+  const mobileToggle = document.getElementById('mobileToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const body = document.body;
+
+  function toggleMenu(forceClose = false) {
+    const isOpen = mobileMenu.classList.contains('is-open') || forceClose;
+    if (isOpen) {
+      mobileMenu.classList.remove('is-open');
+      body.classList.remove('no-scroll');
+      mobileToggle.setAttribute('aria-expanded', 'false');
+      mobileToggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>';
+    } else {
+      mobileMenu.classList.add('is-open');
+      body.classList.add('no-scroll');
+      mobileToggle.setAttribute('aria-expanded', 'true');
+      mobileToggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M6 18L18 6" stroke-linecap="round"/></svg>';
+    }
   }
-};
-  window.i18nDict = translations;
-  const supportedLangs = ['en', 'de', 'es', 'ru'];
-  const storedLang = (() => { try { return localStorage.getItem('site-lang'); } catch (e) { return null; } })();
-  window.currentLang = supportedLangs.includes(storedLang) ? storedLang : 'en';
+
+  mobileToggle.addEventListener('click', () => toggleMenu());
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => toggleMenu(true));
+  });
+
+  /* ─────────────────────────────────────────────────
+  INTERNATIONALIZATION (i18n)
+  ───────────────────────────────────────────────── */
+  const translations = {
+    "en": {
+      "nav.approach": "Approach",
+      "nav.methodology": "Methodology",
+      "nav.cases": "Case Studies",
+      "nav.capabilities": "Capabilities",
+      "nav.cta": "Schedule Consultation",
+      "hero.eyebrow": "Legal Operations Architect",
+      "hero.title": "Translating legal complexity into executable engineering.",
+      "hero.sub": "Bridging the gap between legal operations, process architecture, and software implementation for enterprise legal departments.",
+      "hero.cta": "Schedule Consultation",
+      "hero.meta1.val": "Enterprise Legal Operations",
+      "hero.meta2.val": "Process Architecture & Engineering",
+      "gap.eyebrow": "The Implementation Gap",
+      "gap.title": "Consulting firms diagnose. Vendors sell tools. I do the work in between.",
+      "gap.lead": "Enterprise legal departments do not lack strategy; they lack the engineering translation required to make legal reality match technical execution. I bridge that gap.",
+      "gap.c1.h": "Process & Logic Design",
+      "gap.c1.p": "Mapping the current-state legal workflow, redesigning the logic (BPMN, IF/THEN), and defining the exact technology stack required for execution.",
+      "gap.c2.h": "Engineering Specifications",
+      "gap.c2.p": "Converting legal risk, regulatory requirements (GDPR, EU AI Act), and operational logic into exact engineering blueprints for development teams.",
+      "gap.c3.h": "Delivery to Production",
+      "gap.c3.p": "Leading cross-functional teams (Legal, IT, Compliance) through Agile delivery, UAT governance, and final production sign-off.",
+      "method.eyebrow": "Methodology",
+      "method.title": "An uncommon intersection of practice and engineering.",
+      "method.lead": "A licensed attorney with deep technical expertise. I naturally understand both legal reasoning and software architecture, allowing me to operate where most professionals cannot.",
+      "method.s1.t": "Intake & Assessment",
+      "method.s1.d": "Analyzing the current legal operational state, identifying bottlenecks, and defining the boundaries of regulatory compliance and technical feasibility.",
+      "method.s2.t": "Process Modeling",
+      "method.s2.d": "Redesigning the legal workflow into a structured, automatable format. Defining business logic, conditional routes, and integration points with external systems.",
+      "method.s3.t": "Engineering Translation",
+      "method.s3.d": "Writing functional specifications, API blueprints, and architecture diagrams that translate legal requirements into precise instructions for software development teams.",
+      "method.s4.t": "Production Governance",
+      "method.s4.d": "Leading Agile delivery, managing UAT (User Acceptance Testing) with legal stakeholders, and ensuring the final system operates within the defined risk appetite.",
+      "cases.eyebrow": "Case Studies",
+      "cases.title": "Evidence of transformation.",
+      "cases.labels.problem": "Business Problem",
+      "cases.labels.architecture": "Technical Architecture",
+      "cases.labels.execution": "Implementation Strategy",
+      "case1.tag": "Enterprise AI Implementation",
+      "case1.title": "Global FMCG Compliance Assistant",
+      "case1.problem": "A global FMCG corporation needed a way to query internal compliance documents across multiple jurisdictions without exposing sensitive data to external LLM APIs.",
+      "case1.arch": "Designed a proprietary Retrieval-Augmented Generation (RAG) architecture deployed entirely on client infrastructure, ensuring full data sovereignty.",
+      "case1.exec": "Defined the model selection rationale, GDPR compliance framework, EU AI Act risk classification, and Scrum delivery plan.",
+      "case1.outcome": "Delivered a complete implementation blueprint, bridging legal compliance requirements with engineering execution.",
+      "case2.tag": "Process Automation",
+      "case2.title": "Intestate Succession Automation",
+      "case2.problem": "Manual processing of intestate succession cases took 60 minutes per file, involving complex multi-field forms and external fiscal data lookups.",
+      "case2.arch": "Digitized the Civil Registry's complex form logic and integrated real-time API sources for property valuations, economic unit rates, and tax calculations.",
+      "case2.exec": "Redesigned the end-to-end workflow, automating document generation for court submissions, deeds, and appeals.",
+      "case2.outcome": "Reduced processing time by 80% (60 to 15 minutes per case) and achieved 100% team adoption.",
+      "caps.eyebrow": "Capabilities",
+      "caps.title": "Structural implementation of legal technology.",
+      "caps.c1.t": "AI & RAG Governance",
+      "caps.c1.d": "Architecting proprietary RAG deployments on client infrastructure. Designing AI governance frameworks with EU AI Act risk classification, data sovereignty, and privacy-by-design integration.",
+      "caps.c2.t": "Enterprise Automation",
+      "caps.c2.d": "End-to-end automation of legal workflows: from document generation and CLM platforms to complex matter pipelines and API integrations with external registries.",
+      "caps.c3.t": "Legal Product Thinking",
+      "caps.c3.d": "Translating regulatory frameworks into scalable digital products. Managing the full lifecycle from requirements definition to production deployment and user adoption.",
+      "caps.c4.t": "Implementation Leadership",
+      "caps.c4.d": "Bridging legal practice and software engineering. Managing cross-functional stakeholder alignment, Agile delivery plans, and UAT governance for enterprise rollouts.",
+      "contact.eyebrow": "Engagements",
+      "contact.title": "Build legal systems that work.",
+      "contact.lead": "Available for advisory engagements and implementation leadership across Europe and Latin America. Let's discuss your architecture needs.",
+      "form.name": "Name",
+      "form.email": "Email",
+      "form.company": "Company / Organization",
+      "form.type": "Engagement Type",
+      "form.opt1": "Advisory & Governance",
+      "form.opt2": "Process Automation Architecture",
+      "form.opt3": "AI & RAG Implementation",
+      "form.opt4": "Other",
+      "form.message": "Project Details",
+      "form.submit": "Send Request →",
+      "footer.copy": "© Rafael Montaner · Legal Operations Architect",
+      "footer.location": "Europe & Latin America"
+    },
+    "es": {
+      "nav.approach": "Enfoque",
+      "nav.methodology": "Metodología",
+      "nav.cases": "Casos de Estudio",
+      "nav.capabilities": "Capacidades",
+      "nav.cta": "Agendar Consulta",
+      "hero.eyebrow": "Arquitecto de Operaciones Legales",
+      "hero.title": "Traduzco la complejidad legal en ingeniería ejecutable.",
+      "hero.sub": "Conectando la brecha entre las operaciones legales, la arquitectura de procesos y la implementación de software para departamentos legales empresariales.",
+      "hero.cta": "Agendar Consulta",
+      "hero.meta1.val": "Operaciones Legales Empresariales",
+      "hero.meta2.val": "Arquitectura de Procesos e Ingeniería",
+      "gap.eyebrow": "La Brecha de Implementación",
+      "gap.title": "Las consultoras diagnostican. Los vendedores venden herramientas. Yo hago el trabajo intermedio.",
+      "gap.lead": "Los departamentos legales empresariales no carecen de estrategia; les falta la traducción de ingeniería necesaria para que la realidad legal coincida con la ejecución técnica. Yo cierro esa brecha.",
+      "gap.c1.h": "Diseño de Procesos y Lógica",
+      "gap.c1.p": "Mapeo del flujo de trabajo legal actual, rediseño de la lógica (BPMN, IF/THEN) y definición del stack tecnológico exacto requerido para la ejecución.",
+      "gap.c2.h": "Especificaciones de Ingeniería",
+      "gap.c2.p": "Conversión del riesgo legal, requisitos regulatorios (RGPD, Ley de IA de la UE) y lógica operativa en planos de ingeniería exactos para los equipos de desarrollo.",
+      "gap.c3.h": "Entrega a Producción",
+      "gap.c3.p": "Liderazgo de equipos multifuncionales (Legal, TI, Cumplimiento) a través de la entrega Agile, gobernanza UAT y sign-off final de producción.",
+      "method.eyebrow": "Metodología",
+      "method.title": "Una intersección inusual de práctica e ingeniería.",
+      "method.lead": "Abogado licenciado con profunda experiencia técnica. Comprendo naturalmente tanto el razonamiento legal como la arquitectura de software, lo que me permite operar donde la mayoría de los profesionales no pueden.",
+      "method.s1.t": "Levantamiento y Análisis",
+      "method.s1.d": "Análisis del estado operativo legal actual, identificación de cuellos de botella y definición de los límites de cumplimiento normativo y viabilidad técnica.",
+      "method.s2.t": "Modelado de Procesos",
+      "method.s2.d": "Rediseño del flujo de trabajo legal en un formato estructurado y automatizable. Definición de lógica de negocio, rutas condicionales y puntos de integración con sistemas externos.",
+      "method.s3.t": "Traducción de Ingeniería",
+      "method.s3.d": "Redacción de especificaciones funcionales, planos de API y diagramas de arquitectura que traducen los requisitos legales en instrucciones precisas para los equipos de desarrollo de software.",
+      "method.s4.t": "Gobernanza de Producción",
+      "method.s4.d": "Liderazgo en la entrega Agile, gestión de UAT (Pruebas de Aceptación de Usuario) con partes interesadas legales y aseguramiento de que el sistema final opera dentro del apetito de riesgo definido.",
+      "cases.eyebrow": "Casos de Estudio",
+      "cases.title": "Evidencia de transformación.",
+      "cases.labels.problem": "Problema de Negocio",
+      "cases.labels.architecture": "Arquitectura Técnica",
+      "cases.labels.execution": "Estrategia de Implementación",
+      "case1.tag": "Implementación de IA Empresarial",
+      "case1.title": "Asistente de Cumplimiento FMCG Global",
+      "case1.problem": "Una corporación FMCG global necesitaba consultar documentos de cumplimiento internos en múltiples jurisdicciones sin exponer datos sensibles a APIs de LLM externas.",
+      "case1.arch": "Diseño de una arquitectura propietaria de Generación Aumentada por Recuperación (RAG) desplegada íntegramente en la infraestructura del cliente, asegurando total soberanía de datos.",
+      "case1.exec": "Definición de la justificación de selección de modelos, marco de cumplimiento RGPD, clasificación de riesgo Ley de IA UE y plan de entrega Scrum.",
+      "case1.outcome": "Entrega de un plano completo de implementación, conectando el cumplimiento legal con la ejecución de ingeniería.",
+      "case2.tag": "Automatización de Procesos",
+      "case2.title": "Automatización de Sucesión Intestada",
+      "case2.problem": "El procesamiento manual de casos de sucesión intestada tomaba 60 minutos por archivo, involucrando formularios complejos de múltiples campos y búsquedas de datos fiscales externos.",
+      "case2.arch": "Digitalización de la lógica compleja del Registro Civil e integración de fuentes API en tiempo real para avalúos de propiedades, tasas de unidades económicas y cálculos de impuestos.",
+      "case2.exec": "Rediseño del flujo de trabajo de extremo a extremo, automatizando la generación de documentos para presentaciones judiciales, escrituras y apelaciones.",
+      "case2.outcome": "Reducción del tiempo de procesamiento en un 80% (de 60 a 15 minutos por caso) y adopción del 100% por el equipo.",
+      "caps.eyebrow": "Capacidades",
+      "caps.title": "Implementación estructural de tecnología legal.",
+      "caps.c1.t": "Gobernanza de IA y RAG",
+      "caps.c1.d": "Arquitectura de despliegues RAG propietarios en infraestructura del cliente. Diseño de marcos de gobernanza de IA con clasificación de riesgo Ley de IA UE, soberanía de datos y privacidad por diseño.",
+      "caps.c2.t": "Automatización Empresarial",
+      "caps.c2.d": "Automatización de extremo a extremo de flujos de trabajo legales: desde generación de documentos y plataformas CLM hasta pipelines de casos complejos e integraciones API con registros externos.",
+      "caps.c3.t": "Pensamiento de Producto Legal",
+      "caps.c3.d": "Traducción de marcos regulatorios en productos digitales escalables. Gestión del ciclo de vida completo desde la definición de requisitos hasta el despliegue y adopción.",
+      "caps.c4.t": "Liderazgo de Implementación",
+      "caps.c4.d": "Puente entre la práctica legal y la ingeniería de software. Gestión de alineación de partes interesadas, planes de entrega Agile y gobernanza UAT para despliegues empresariales.",
+      "contact.eyebrow": "Colaboraciones",
+      "contact.title": "Construyamos sistemas legales que funcionen.",
+      "contact.lead": "Disponible para asesorías y liderazgo de implementación en Europa y Latinoamérica. Hablemos sobre sus necesidades de arquitectura.",
+      "form.name": "Nombre",
+      "form.email": "Correo",
+      "form.company": "Empresa / Organización",
+      "form.type": "Tipo de Colaboración",
+      "form.opt1": "Asesoría y Gobernanza",
+      "form.opt2": "Arquitectura de Automatización",
+      "form.opt3": "Implementación de IA y RAG",
+      "form.opt4": "Otro",
+      "form.message": "Detalles del Proyecto",
+      "form.submit": "Enviar Solicitud →",
+      "footer.copy": "© Rafael Montaner · Arquitecto de Operaciones Legales",
+      "footer.location": "Europa y Latinoamérica"
+    },
+    "de": {
+      "nav.approach": "Ansatz",
+      "nav.methodology": "Methodik",
+      "nav.cases": "Fallstudien",
+      "nav.capabilities": "Fähigkeiten",
+      "nav.cta": "Beratung planen",
+      "hero.eyebrow": "Legal Operations Architect",
+      "hero.title": "Übersetzung rechtlicher Komplexität in ausführbares Engineering.",
+      "hero.sub": "Überbrückung der Lücke zwischen Legal Operations, Prozessarchitektur und Softwareimplementierung für Unternehmensrechtsabteilungen.",
+      "hero.cta": "Beratung planen",
+      "hero.meta1.val": "Enterprise Legal Operations",
+      "hero.meta2.val": "Prozessarchitektur & Engineering",
+      "gap.eyebrow": "Die Implementierungslücke",
+      "gap.title": "Unternehmensberatungen diagnostizieren. Anbieter verkaufen Tools. Ich mache die Arbeit dazwischen.",
+      "gap.lead": "Enterprise-Rechtsabteilungen mangelt es nicht an Strategie; ihnen fehlt die Engineering-Übersetzung, um die rechtliche Realität mit der technischen Ausführung in Einklang zu bringen. Ich schließe diese Lücke.",
+      "gap.c1.h": "Prozess- & Logikdesign",
+      "gap.c1.p": "Abbildung des aktuellen Rechtsworkflows, Neugestaltung der Logik (BPMN, IF/THEN) und Definition des genauen Technologie-Stacks für die Ausführung.",
+      "gap.c2.h": "Engineering-Spezifikationen",
+      "gap.c2.p": "Umwandlung von Rechtsrisiken, regulatorischen Anforderungen (DSGVO, EU AI Act) und operativer Logik in exakte Engineering-Baupläne für Entwicklungsteams.",
+      "gap.c3.h": "Lieferung in Produktion",
+      "gap.c3.p": "Führung bereichsübergreifender Teams (Legal, IT, Compliance) durch agile Lieferung, UAT-Governance und finale Produktivfreigabe.",
+      "method.eyebrow": "Methodik",
+      "method.title": "Eine ungewöhnliche Schnittstelle von Praxis und Engineering.",
+      "method.lead": "Zugelassener Rechtsanwalt mit tiefgehender technischer Expertise. Ich verstehe natürlich sowohl rechtliches Denken als auch Softwarearchitektur und kann dort agieren, wo es anderen nicht möglich ist.",
+      "method.s1.t": "Analyse & Bewertung",
+      "method.s1.d": "Analyse des aktuellen rechtlichen Operatonszustands, Identifizierung von Engpässen und Definition der Grenzen regulatorischer Compliance und technischer Machbarkeit.",
+      "method.s2.t": "Prozessmodellierung",
+      "method.s2.d": "Neugestaltung des Rechtsworkflows in ein strukturiertes, automatisierbares Format. Definition von Geschäftslogik, bedingten Routen und Integrationspunkten mit externen Systemen.",
+      "method.s3.t": "Engineering-Übersetzung",
+      "method.s3.d": "Erstellung von Funktionsspezifikationen, API-Bauplänen und Architekturdiagrammen, die rechtliche Anforderungen in präzise Anweisungen für Softwareentwicklungsteams übersetzen.",
+      "method.s4.t": "Produktions-Governance",
+      "method.s4.d": "Leitung der agilen Lieferung, Management der UAT (User Acceptance Testing) mit rechtlichen Stakeholdern und Sicherstellung, dass das System innerhalb der definierten Risikobereitschaft arbeitet.",
+      "cases.eyebrow": "Fallstudien",
+      "cases.title": "Beweise der Transformation.",
+      "cases.labels.problem": "Geschäftsproblem",
+      "cases.labels.architecture": "Technische Architektur",
+      "cases.labels.execution": "Implementierungsstrategie",
+      "case1.tag": "Enterprise KI-Implementierung",
+      "case1.title": "Globaler FMCG-Compliance-Assistent",
+      "case1.problem": "Ein globaler FMCG-Konzern benötigte eine Möglichkeit, interne Compliancedokumente über mehrere Gerichtsbarkeiten hinweg abzufragen, ohne sensible Daten an externe LLM-APIs weiterzugeben.",
+      "case1.arch": "Entwurf einer proprietären Retrieval-Augmented Generation (RAG)-Architektur, die vollständig auf der Client-Infrastruktur bereitgestellt wurde, um volle Datensouveränität zu gewährleisten.",
+      "case1.exec": "Definition der Modellauswahlbegründung, des DSGVO-Compliance-Frameworks, der EU-AI-Act-Risikoklassifizierung und des Scrum-Lieferplans.",
+      "case1.outcome": "Lieferung eines vollständigen Implementierungsbauplans, der rechtliche Compliance-Anforderungen mit der Engineering-Ausführung verbindet.",
+      "case2.tag": "Prozessautomatisierung",
+      "case2.title": "Automatisierung der gesetzlichen Erbfolge",
+      "case2.problem": "Die manuelle Bearbeitung von Fällen gesetzlicher Erbfolge dauerte 60 Minuten pro Akte und umfasste komplexe Mehrfelder-Formulare und externe Finanzdatensuchen.",
+      "case2.arch": "Digitalisierung der komplexen Formularlogik des Standesamtes und Integration Echtzeit-API-Quellen für Immobilienbewertungen, Wirtschaftseinheitenraten und Steuerberechnungen.",
+      "case2.exec": "Neugestaltung des End-to-End-Workflows, Automatisierung der Dokumentengenerierung für Gerichtseinreichungen, Urkunden und Berufungen.",
+      "case2.outcome": "Reduzierung der Bearbeitungszeit um 80 % (60 auf 15 Minuten pro Fall) und Erreichung einer 100%igen Teamakzeptanz.",
+      "caps.eyebrow": "Fähigkeiten",
+      "caps.title": "Strukturelle Implementierung von Legal Tech.",
+      "caps.c1.t": "AI- & RAG-Governance",
+      "caps.c1.d": "Architektur proprietärer RAG-Bereitstellungen auf Client-Infrastruktur. Design von AI-Governance-Frameworks mit EU-AI-Act-Risikoklassifizierung, Datensouveränität und Privacy-by-Design.",
+      "caps.c2.t": "Enterprise-Automatisierung",
+      "caps.c2.d": "End-to-End-Automatisierung legaler Workflows: von Dokumentengenerierung und CLM-Plattformen bis hin zu komplexen Fall-Pipelines und API-Integrationen.",
+      "caps.c3.t": "Legal Product Thinking",
+      "caps.c3.d": "Übersetzung regulatorischer Rahmenbedingungen in skalierbare digitale Produkte. Management des gesamten Lebenszyklus von der Anforderungsdefinition bis zur Produktivbereitstellung.",
+      "caps.c4.t": "Implementierungsleitung",
+      "caps.c4.d": "Verbindung von Rechtspraxis und Softwareentwicklung. Management der Stakeholder-Ausrichtung, agilen Lieferpläne und UAT-Governance für Enterprise-Rollouts.",
+      "contact.eyebrow": "Mandate",
+      "contact.title": "Bauen Sie Rechtssysteme, die funktionieren.",
+      "contact.lead": "Verfügbar für beratende Mandate und Implementierungsleitung in Europa und Lateinamerika. Lassen Sie uns Ihre Architekturbedürfnisse besprechen.",
+      "form.name": "Name",
+      "form.email": "E-Mail",
+      "form.company": "Unternehmen / Organisation",
+      "form.type": "Art des Mandats",
+      "form.opt1": "Beratung & Governance",
+      "form.opt2": "Prozessautomatisierungs-Architektur",
+      "form.opt3": "AI- & RAG-Implementierung",
+      "form.opt4": "Sonstiges",
+      "form.message": "Projektdetails",
+      "form.submit": "Anfrage senden →",
+      "footer.copy": "© Rafael Montaner · Legal Operations Architect",
+      "footer.location": "Europa und Lateinamerika"
+    },
+    "ru": {
+      "nav.approach": "Подход",
+      "nav.methodology": "Методология",
+      "nav.cases": "Кейсы",
+      "nav.capabilities": "Компетенции",
+      "nav.cta": "Назначить консультацию",
+      "hero.eyebrow": "Архитектор юридических операций",
+      "hero.title": "Перевожу юридическую сложность в исполняемый код.",
+      "hero.sub": "Стираю границу между юридическими операциями, архитектурой процессов и внедрением ПО для корпоративных юридических департаментов.",
+      "hero.cta": "Назначить консультацию",
+      "hero.meta1.val": "Корпоративные юридические операции",
+      "hero.meta2.val": "Архитектура процессов и инжиниринг",
+      "gap.eyebrow": "Разрыв во внедрении",
+      "gap.title": "Консалтинговые компании ставят диагнозы. Вендоры продают инструменты. Я делаю работу между ними.",
+      "gap.lead": "В корпоративных юридических отделах нет нехватки стратегии; им не хватает инженерного перевода, чтобы юридическая реальность соответствовала техническому исполнению. Я заполняю этот пробел.",
+      "gap.c1.h": "Проектирование процессов и логики",
+      "gap.c1.p": "Картирование текущего юридического рабочего процесса, перепроектирование логики (BPMN, IF/THEN) и определение точного технологического стека, необходимого для выполнения.",
+      "gap.c2.h": "Инженерные спецификации",
+      "gap.c2.p": "Преобразование юридических рисков, нормативных требований (GDPR, EU AI Act) и операционной логики в точные инженерные чертежи для команд разработчиков.",
+      "gap.c3.h": "Доставка в продакшн",
+      "gap.c3.p": "Руководство кросс-функциональными командами (Юристы, ИТ, Комплаенс) через гибкую доставку, управление UAT и финальное подписание продакшна.",
+      "method.eyebrow": "Методология",
+      "method.title": "Необычное пересечение практики и инжиниринга.",
+      "method.lead": "Практикующий юрист с глубокой технической экспертизой. Я естественно понимаю как юридическое мышление, так и архитектуру ПО, что позволяет мне работать там, где большинство профессионалов не могут.",
+      "method.s1.t": "Анализ и оценка",
+      "method.s1.d": "Анализ текущего состояния юридических операций, выявление узких мест и определение границ соответствия нормативным требованиям и технической осуществимости.",
+      "method.s2.t": "Моделирование процессов",
+      "method.s2.d": "Перепроектирование юридического рабочего процесса в структурированный, автоматизируемый формат. Определение бизнес-логики, условных маршрутов и точек интеграции с внешними системами.",
+      "method.s3.t": "Инженерный перевод",
+      "method.s3.d": "Написание функциональных спецификаций, чертежей API и диаграмм архитектуры, которые переводят юридические требования в точные инструкции для команд по разработке ПО.",
+      "method.s4.t": "Управление продакшном",
+      "method.s4.d": "Руководство гибкой разработкой, управление UAT (приемочным тестированием пользователей) с юридическими стейкхолдерами и обеспечение работы final системы в рамках заданного риска.",
+      "cases.eyebrow": "Кейсы",
+      "cases.title": "Доказательства трансформации.",
+      "cases.labels.problem": "Бизнес-проблема",
+      "cases.labels.architecture": "Техническая архитектура",
+      "cases.labels.execution": "Стратегия внедрения",
+      "case1.tag": "Внедрение корпоративного ИИ",
+      "case1.title": "Глобальный комплаенс-ассистент FMCG",
+      "case1.problem": "Глобальной корпорации FMCG требовался способ запрашивать внутренние комплаенс-документы в нескольких юрисдикциях без раскрытия конфиденциальных данных внешним API LLM.",
+      "case1.arch": "Разработана проприетарная архитектура RAG (Retrieval-Augmented Generation), развернутая полностью на инфраструктуре клиента, что обеспечивает полный суверенитет данных.",
+      "case1.exec": "Определено обоснование выбора модели, рамки соответствия GDPR, классификация рисков по EU AI Act и план доставки Scrum.",
+      "case1.outcome": "Доставлен полный план внедрения, объединяющий требования юридического комплаенса с инженерным исполнением.",
+      "case2.tag": "Автоматизация процессов",
+      "case2.title": "Автоматизация наследования по закону",
+      "case2.problem": "Ручная обработка дел по наследованию по закону занимала 60 минут на дело, включая сложные многостраничные формы и поиск внешних финансовых данных.",
+      "case2.arch": "Оцифрована сложная логика форм ЗАГСа и интегрированы источники API в реальном времени для оценки недвижимости, ставок экономических единиц и расчета налогов.",
+      "case2.exec": "Перепроектирован рабочий процесс от начала до конца, автоматизирована генерация документов для судебных подач, актов и апелляций.",
+      "case2.outcome": "Сокращено время обработки на 80% (с 60 до 15 минут на дело) и достигнуто 100% принятие командой.",
+      "caps.eyebrow": "Компетенции",
+      "caps.title": "Структурная реализация юридических технологий.",
+      "caps.c1.t": "Управление ИИ и RAG",
+      "caps.c1.d": "Архитектура собственных RAG-развертываний на инфраструктуре клиента. Разработка фреймворков управления ИИ с классификацией рисков EU AI Act, суверенитетом данных и privacy-by-design.",
+      "caps.c2.t": "Корпоративная автоматизация",
+      "caps.c2.d": "Сквозная автоматизация юридических рабочих процессов: от генерации документов и платформ CLM до сложных пайплайнов дел и API-интеграций с внешними реестрами.",
+      "caps.c3.t": "Юридическое продуктовое мышление",
+      "caps.c3.d": "Перевод нормативных рамок в масштабируемые цифровые продукты. Управление полным жизненным циклом от определения требований до развертывания в продакшн и принятия пользователями.",
+      "caps.c4.t": "Лидерство внедрения",
+      "caps.c4.d": "Связующее звено между юридической практикой и разработкой ПО. Управление согласованием стейкхолдеров, гибкими планами доставки и управлением UAT для корпоративных развертываний.",
+      "contact.eyebrow": "Сотрудничество",
+      "contact.title": "Создавайте юридические системы, которые работают.",
+      "contact.lead": "Открыт для консультаций и руководства реализацией в Европе и Латинской Америке. Давайте обсудим ваши архитектурные потребности.",
+      "form.name": "Имя",
+      "form.email": "Эл. почта",
+      "form.company": "Компания / Организация",
+      "form.type": "Тип сотрудничества",
+      "form.opt1": "Консалтинг и управление",
+      "form.opt2": "Архитектура автоматизации процессов",
+      "form.opt3": "Внедрение ИИ и RAG",
+      "form.opt4": "Другое",
+      "form.message": "Детали проекта",
+      "form.submit": "Отправить запрос →",
+      "footer.copy": "© Rafael Montaner · Архитектор юридических операций",
+      "footer.location": "Европа и Латинская Америка"
+    }
+  };
+
+  /* Language Switching Logic */
+  const supportedLangs = ['en', 'es', 'de', 'ru'];
+  const storedLang = (() => {
+    try { return localStorage.getItem('site-lang'); } catch (e) { return null; }
+  })();
+  let currentLang = supportedLangs.includes(storedLang) ? storedLang : 'en';
 
   function applyLanguage(lang) {
     if (!translations[lang]) return;
-    window.currentLang = lang;
+    currentLang = lang;
     document.documentElement.lang = lang;
     try { localStorage.setItem('site-lang', lang); } catch (e) {}
 
+    // Fade out elements slightly to avoid harsh text popping (optional but premium)
+    // For simplicity and performance, direct update is used here as it's instant.
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      if (translations[lang][key] !== undefined) el.textContent = translations[lang][key];
-    });
-    document.querySelectorAll('[data-i18n-html]').forEach(el => {
-      const key = el.getAttribute('data-i18n-html');
-      if (translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-      const key = el.getAttribute('data-i18n-placeholder');
-      if (translations[lang][key] !== undefined) el.setAttribute('placeholder', translations[lang][key]);
+      if (translations[lang][key] !== undefined) {
+        el.textContent = translations[lang][key];
+      }
     });
 
     document.querySelectorAll('.lang-switch button').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.lang === lang);
+      const isActive = btn.dataset.lang === lang;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-pressed', isActive);
     });
-
-    // refresh any principle card currently mid-typewriter so the quote matches the new language
-    document.querySelectorAll('.principle.is-typing').forEach(card => card.dispatchEvent(new Event('mouseleave')));
   }
 
   document.querySelectorAll('.lang-switch button').forEach(btn => {
     btn.addEventListener('click', () => applyLanguage(btn.dataset.lang));
   });
 
-  applyLanguage(window.currentLang);
-
-  /* ─────── Smooth anchor scroll with offset ─────── */
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const id = a.getAttribute('href').slice(1);
-      const target = document.getElementById(id);
-      if (target) {
-        e.preventDefault();
-        const y = target.getBoundingClientRect().top + window.scrollY - 60;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    });
-  });
+  // Initial application
+  applyLanguage(currentLang);
 })();
 </script>
-
 </body>
 </html>
