@@ -38,7 +38,8 @@
   RESET & BASE STYLES
   ───────────────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  html:not(.js-anim) { scroll-behavior: smooth; }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: var(--bg);
@@ -53,7 +54,7 @@
   }
   body.no-scroll { overflow: hidden; }
   ::selection { background: var(--accent); color: var(--bg); }
-  
+
   /* Fluid Typography */
   h1, h2, h3, h4 { font-family: 'Newsreader', serif; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; }
   h1 { font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1.05; }
@@ -83,7 +84,7 @@
     gap: var(--grid-gap);
   }
   section { padding: 12rem 0; border-bottom: 1px solid var(--line); }
-  @media (max-width: 768px) { 
+  @media (max-width: 768px) {
     section { padding: 6rem 0; }
     .container { padding: 0 24px; }
   }
@@ -123,6 +124,8 @@
   }
   .nav-links a:hover { color: var(--text); }
   .nav-links a:hover::after { width: 100%; }
+  .nav-links a.is-active { color: var(--text); }
+  .nav-links a.is-active::after { width: 100%; }
 
   .lang-switch {
     display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden;
@@ -144,10 +147,11 @@
     display: inline-flex; align-items: center; gap: 0.4rem;
   }
   .nav-cta:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .nav-cta.is-active { background: var(--accent); }
   .nav-cta svg { transition: transform 300ms var(--ease-quiet); }
   .nav-cta:hover svg { transform: translateX(2px); }
 
-  .mobile-toggle { 
+  .mobile-toggle {
     display: none; background: none; border: none; cursor: pointer; color: var(--text);
     z-index: 101; padding: 8px;
   }
@@ -192,7 +196,7 @@
   HERO SECTION
   ───────────────────────────────────────────────── */
   .hero {
-    min-height: 100vh; 
+    min-height: 100vh;
     display: flex; align-items: center;
     border-bottom: 1px solid var(--line);
     position: relative;
@@ -227,7 +231,7 @@
     transition: gap 400ms var(--ease-quiet), color 300ms var(--ease-quiet), border-color 300ms var(--ease-quiet);
   }
   .hero__cta:hover { gap: 1.25rem; color: var(--accent); border-color: var(--accent); }
-  
+
   .hero__meta {
     position: absolute; bottom: 4rem; right: 48px;
     text-align: right; font-size: 0.8rem; color: var(--text-mute);
@@ -241,7 +245,7 @@
   .gap__layout { display: flex; flex-direction: column; gap: 4rem; }
   .gap__header { grid-column: 1 / 7; }
   .gap__intro { grid-column: 7 / 13; align-self: end; }
-  
+
   .gap__list {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 4rem;
     margin-top: 6rem; padding-top: 4rem; border-top: 1px solid var(--line);
@@ -266,24 +270,31 @@
   /* ─────────────────────────────────────────────────
   CASE STUDIES (Alternating Editorial)
   ───────────────────────────────────────────────── */
-  .case-study { 
-    display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--grid-gap); 
+  .case-study {
+    display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--grid-gap);
     margin-bottom: 10rem; padding: 3rem; border-radius: 4px;
     transition: background 400ms var(--ease-quiet), box-shadow 400ms var(--ease-quiet);
   }
-  .case-study:hover { 
-    background: var(--surface); 
+  .case-study:hover {
+    background: var(--surface);
     box-shadow: 0 20px 40px -20px rgba(0,0,0,0.04);
   }
   .case-study:last-child { margin-bottom: 0; }
   .case-study:nth-child(even) .case__meta { grid-column: 8 / 13; order: 2; }
   .case-study:nth-child(even) .case__content { grid-column: 1 / 7; order: 1; }
-  
+
   .case__meta { grid-column: 1 / 5; }
   .case__content { grid-column: 6 / 13; }
-  
+
   .case__tag { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 1rem; display: block; font-weight: 600; }
-  .case__title { font-size: clamp(1.5rem, 3vw, 2.25rem); margin-bottom: 2rem; line-height: 1.15; }
+  .case__title { font-size: clamp(1.5rem, 3vw, 2.25rem); margin-bottom: 0.75rem; line-height: 1.15; }
+  .case__title:last-child { margin-bottom: 2rem; }
+  .case__link {
+    display: inline-block; font-size: 0.8rem; font-weight: 500; color: var(--text-soft);
+    border-bottom: 1px solid var(--line); padding-bottom: 2px;
+    transition: color 300ms var(--ease-quiet), border-color 300ms var(--ease-quiet);
+  }
+  .case__link:hover { color: var(--text); border-color: var(--text); }
   .case__details { display: flex; flex-direction: column; gap: 2.5rem; margin-top: 2rem; }
   .case__detail-block h4 { font-family: 'Inter', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-mute); margin-bottom: 0.5rem; font-weight: 600; }
   .case__detail-block p { font-size: 0.95rem; }
@@ -314,7 +325,7 @@
   .contact__grid { grid-column: 2 / 12; text-align: center; }
   .contact__title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 2rem; }
   .contact__lead { font-size: 1.2rem; margin: 0 auto 5rem; max-width: 50ch; }
-  
+
   .contact__form {
     max-width: 600px; margin: 0 auto; text-align: left;
     display: flex; flex-direction: column; gap: 2.5rem;
@@ -331,7 +342,7 @@
   .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--text); }
   .form-select { cursor: pointer; }
   .form-textarea { min-height: 60px; resize: vertical; }
-  
+
   .form-submit {
     margin-top: 1rem; padding: 1.2rem 2rem; background: var(--text); color: var(--bg);
     border: none; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
@@ -347,6 +358,12 @@
   footer { padding: 4rem 0; border-top: 1px solid var(--line); }
   .footer__inner { display: flex; justify-content: space-between; align-items: center; }
   .footer__copy { font-size: 0.85rem; color: var(--text-mute); }
+  .footer__right { display: flex; align-items: center; gap: 1.5rem; }
+  .footer__link {
+    font-size: 0.85rem; font-weight: 500; color: var(--text-soft);
+    transition: color 300ms var(--ease-quiet);
+  }
+  .footer__link:hover { color: var(--text); }
 
   /* ─────────────────────────────────────────────────
   RESPONSIVE
@@ -385,6 +402,36 @@
     }
     .reveal { opacity: 1; transform: none; }
   }
+
+  /* ─────────────────────────────────────────────────
+  MOTION LAYER — GSAP / LENIS (additive only)
+  ───────────────────────────────────────────────── */
+  .h2-mask { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .h2-mask > h2 { display: block; will-change: transform; }
+
+  /* Flowchart: Legal Ops pipeline */
+  .flowchart { padding: 6rem 0; background: var(--bg); }
+  .flow-svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .flow-node { transform-box: fill-box; transform-origin: center; }
+  .flow-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.24em; fill: var(--text-mute); }
+
+  /* Methodology step focus */
+  .method__step { transition: transform 700ms var(--ease-quiet); }
+  .method__step .method__title { transition: opacity 700ms var(--ease-quiet); opacity: 0.4; }
+  .method__step .method__desc  { transition: color 700ms var(--ease-quiet); color: var(--text-mute); }
+  .method__step .method__label { transition: color 700ms var(--ease-quiet); color: var(--text-mute); }
+  .method__step.is-focus { transform: scale(1.01); }
+  .method__step.is-focus .method__title { opacity: 1; }
+  .method__step.is-focus .method__desc  { color: var(--text); }
+  .method__step.is-focus .method__label { color: var(--accent); }
+
+  /* Kill CSS transitions where GSAP writes (removes jelly lag) */
+  .js-anim .method__step.reveal { transition: opacity 1200ms var(--ease-emphasis), transform 700ms var(--ease-quiet); }
+  .js-anim .hero .reveal { transition: none; opacity: 1; transform: none; }
+
+  /* Hero curtain layer (existing palette token, creates depth on overlap) */
+  .js-anim .hero { background: var(--surface-alt); }
 </style>
 </head>
 <body>
@@ -484,6 +531,33 @@ HEADER
   </section>
 
   <!-- ─────────────────────────────────────────────────
+  LEGAL OPS PIPELINE (scroll-drawn vector)
+  ────────────────────────────────────────────────── -->
+  <section id="flowchart" class="flowchart" aria-hidden="true">
+    <div class="container">
+      <svg class="flow-svg" viewBox="0 0 1000 240" fill="none">
+        <path d="M70 120 H930" stroke="var(--line)" stroke-width="1"/>
+        <path id="flowPath" d="M70 120 H930" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+        <g class="flow-tick"><line x1="70"  y1="100" x2="70"  y2="112" stroke="var(--line)"/></g>
+        <g class="flow-tick"><line x1="285" y1="128" x2="285" y2="140" stroke="var(--line)"/></g>
+        <g class="flow-tick"><line x1="500" y1="100" x2="500" y2="112" stroke="var(--line)"/></g>
+        <g class="flow-tick"><line x1="715" y1="128" x2="715" y2="140" stroke="var(--line)"/></g>
+        <g class="flow-tick"><line x1="930" y1="100" x2="930" y2="112" stroke="var(--line)"/></g>
+        <g class="flow-node"><circle cx="70"  cy="120" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/><circle cx="70"  cy="120" r="2" fill="var(--accent)"/></g>
+        <g class="flow-node"><circle cx="285" cy="120" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/><circle cx="285" cy="120" r="2" fill="var(--accent)"/></g>
+        <g class="flow-node"><circle cx="500" cy="120" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/><circle cx="500" cy="120" r="2" fill="var(--accent)"/></g>
+        <g class="flow-node"><circle cx="715" cy="120" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/><circle cx="715" cy="120" r="2" fill="var(--accent)"/></g>
+        <g class="flow-node"><circle cx="930" cy="120" r="6" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/><circle cx="930" cy="120" r="2" fill="var(--accent)"/></g>
+        <text class="flow-label" x="70"  y="80"  text-anchor="middle">INTAKE</text>
+        <text class="flow-label" x="285" y="170" text-anchor="middle">TRIAGE</text>
+        <text class="flow-label" x="500" y="80"  text-anchor="middle">WORKFLOW</text>
+        <text class="flow-label" x="715" y="170" text-anchor="middle">CLM</text>
+        <text class="flow-label" x="930" y="80"  text-anchor="middle">GOVERNANCE</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────
   METHODOLOGY
   ────────────────────────────────────────────────── -->
   <section id="methodology" style="background: var(--surface);">
@@ -577,6 +651,58 @@ HEADER
           <p class="case__outcome" data-i18n="case2.outcome">Reduced processing time by 80% (60 to 15 minutes per case) and achieved 100% team adoption.</p>
         </div>
       </article>
+
+      <!-- Case 3: contRAG -->
+      <article class="case-study reveal">
+        <div class="case__meta">
+          <span class="case__tag" data-i18n="case3.tag">Document Intelligence</span>
+          <h3 class="case__title" data-i18n="case3.title">contRAG™ Legal Document Intelligence</h3>
+          <a class="case__link" href="https://www.linkedin.com/feed/update/urn:li:activity:7508939578297405440/" target="_blank" rel="noopener noreferrer" data-i18n="case.link">View on LinkedIn ↗</a>
+        </div>
+        <div class="case__content">
+          <div class="case__details">
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.problem">Business Problem</h4>
+              <p data-i18n="case3.problem">Legal and business teams sit on vast contract, policy, and invoice archives, yet answering questions across them stays slow and manual — and generic chatbots answer from training data instead of the actual documents.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.architecture">Technical Architecture</h4>
+              <p data-i18n="case3.arch">A Retrieval-Augmented Generation pipeline: document ingestion, structured and unstructured extraction, vector embeddings, contextual retrieval, and grounded generation with exact citations — no answer without a traceable source.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.execution">Implementation Strategy</h4>
+              <p data-i18n="case3.exec">Built a functional prototype supporting semantic queries across single documents or the whole archive, side-by-side version comparison of clauses such as confidentiality, liability, and data protection, and full answer traceability.</p>
+            </div>
+          </div>
+          <p class="case__outcome" data-i18n="case3.outcome">Turned an unstructured document archive into searchable, structured intelligence — from raw contracts to cited answers in seconds.</p>
+        </div>
+      </article>
+
+      <!-- Case 4: Legal Intaker -->
+      <article class="case-study reveal delay-1">
+        <div class="case__meta">
+          <span class="case__tag" data-i18n="case4.tag">Native Legal Product</span>
+          <h3 class="case__title" data-i18n="case4.title">Legal Intaker™ Contract Intake</h3>
+          <a class="case__link" href="https://www.linkedin.com/feed/update/urn:li:activity:7497742509239095297/" target="_blank" rel="noopener noreferrer" data-i18n="case.link">View on LinkedIn ↗</a>
+        </div>
+        <div class="case__content">
+          <div class="case__details">
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.problem">Business Problem</h4>
+              <p data-i18n="case4.problem">Repetitive, low-risk contract work — turning a raw client message into an NDA — consumes time without adding strategic value, while cloud tools create external dependency over sensitive data.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.architecture">Technical Architecture</h4>
+              <p data-i18n="case4.arch">A native macOS application built on regex and process design: no AI, no cloud. Counterparty data is extracted locally and mirrored from the user profile; documents are generated entirely on-device.</p>
+            </div>
+            <div class="case__detail-block">
+              <h4 data-i18n="cases.labels.execution">Implementation Strategy</h4>
+              <p data-i18n="case4.exec">Designed a seven-step guided flow — intake, contract type suggestion with rationale, party extraction, field review checklist, terms, preview, and generation — from any email, chat, or contact-form message.</p>
+            </div>
+          </div>
+          <p class="case__outcome" data-i18n="case4.outcome">From raw message to a numbered, signable NDA in under a minute — with data that never leaves the machine.</p>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -627,7 +753,7 @@ HEADER
         <span class="hero__eyebrow" style="justify-content: center;" data-i18n="contact.eyebrow">Engagements</span>
         <h2 class="contact__title" data-i18n="contact.title">Build legal systems that work.</h2>
         <p class="contact__lead" data-i18n="contact.lead">Available for advisory engagements and implementation leadership across Europe and Latin America. Let's discuss your architecture needs.</p>
-        
+
         <form class="contact__form" id="contactForm" onsubmit="event.preventDefault(); this.querySelector('button').textContent = '✓ Request Received'; this.querySelector('button').style.background = 'var(--accent)';">
           <div class="form-row">
             <div class="form-group">
@@ -669,10 +795,145 @@ FOOTER
 <footer>
   <div class="container footer__inner">
     <span class="footer__copy" data-i18n="footer.copy">© Rafael Montaner · Legal Operations Architect</span>
-    <span class="footer__copy" data-i18n="footer.location">Europe & Latin America</span>
+    <div class="footer__right">
+      <span class="footer__copy" data-i18n="footer.location">Europe & Latin America</span>
+      <a class="footer__link" href="https://www.linkedin.com/in/rafaelmontaner/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+    </div>
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+/* ═════════════════════════════════════════════════
+   MOTION LAYER v2 — Lenis + GSAP ScrollTrigger
+   (additive only; degrades gracefully)
+   ═════════════════════════════════════════════════ */
+(function () {
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion || !window.gsap || !window.ScrollTrigger || !window.Lenis) return;
+  document.documentElement.classList.add('js-anim');
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
+
+  /* ── 1 · Lenis ↔ ScrollTrigger ticker sync ── */
+  var lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0);
+
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href');
+      if (id === '#') { e.preventDefault(); lenis.scrollTo(0, { duration: 1.4 }); return; }
+      var target = document.querySelector(id);
+      if (target) { e.preventDefault(); lenis.scrollTo(target, { offset: -70, duration: 1.4 }); }
+    });
+  });
+
+  /* ── 5 · Typographic line-mask reveals (h2) ── */
+  document.querySelectorAll('section h2').forEach(function (h2) {
+    var mask = document.createElement('span');
+    mask.className = 'h2-mask';
+    h2.parentNode.insertBefore(mask, h2);
+    mask.appendChild(h2);
+    gsap.from(h2, {
+      yPercent: 115, duration: 1.3, ease: 'power4.out',
+      scrollTrigger: { trigger: mask, start: 'top 88%', once: true }
+    });
+  });
+
+  /* ── 2 · Legal Ops pipeline self-draw ── */
+  var fp = document.getElementById('flowPath');
+  if (fp) {
+    var L = fp.getTotalLength();
+    gsap.set(fp, { strokeDasharray: L, strokeDashoffset: L });
+    gsap.to(fp, {
+      strokeDashoffset: 0, ease: 'none',
+      scrollTrigger: { trigger: '#flowchart', start: 'top 82%', end: 'center 55%', scrub: 0.6 }
+    });
+    /* nodes & labels pop when reached (no scrub = crisp, snappy) */
+    var flowST = { trigger: '#flowchart', start: 'top 68%', toggleActions: 'play none none reverse' };
+    gsap.from('.flow-node', { scale: 0, opacity: 0, stagger: 0.14, duration: 0.55, ease: 'back.out(1.8)', scrollTrigger: flowST });
+    gsap.from('.flow-tick', { opacity: 0, stagger: 0.14, duration: 0.4, ease: 'power2.out', scrollTrigger: flowST });
+    gsap.from('.flow-label', { opacity: 0, y: 6, stagger: 0.14, duration: 0.5, ease: 'power2.out', scrollTrigger: flowST });
+  }
+
+  var mm = gsap.matchMedia();
+
+  mm.add('(min-width: 769px)', function () {
+    /* ── HERO CURTAIN PARALLAX ──
+       Hero pins; the next section slides over it while
+       the content drifts apart at staggered speeds.
+       fromTo with explicit start values: independent of
+       when values get recorded vs. the intro timeline. */
+    var heroTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.hero', start: 'top top', end: '+=65%',
+        scrub: 0.4, pin: true, pinSpacing: false, anticipatePin: 1
+      }
+    });
+    heroTL
+      .fromTo('.hero__content', { scale: 1, y: 0, opacity: 1 },
+        { scale: 0.9, y: -30, opacity: 0, transformOrigin: 'center 35%', ease: 'none', immediateRender: false }, 0)
+      .fromTo('.hero__eyebrow', { y: 0, opacity: 1 },
+        { y: -30, opacity: 0, ease: 'none', immediateRender: false }, 0)
+      .fromTo('.hero__title', { y: 0 },
+        { y: -70, ease: 'none', immediateRender: false }, 0)
+      .fromTo('.hero__sub', { y: 0 },
+        { y: -110, ease: 'none', immediateRender: false }, 0)
+      .fromTo('.hero__cta', { y: 0, opacity: 1 },
+        { y: -150, opacity: 0, ease: 'none', immediateRender: false }, 0)
+      .fromTo('#heroMeta', { opacity: 1 },
+        { opacity: 0, ease: 'none', immediateRender: false }, 0);
+  });
+
+  mm.add('(min-width: 1025px)', function () {
+    /* Step focus: mute → #111 with scale 1.01 */
+    gsap.utils.toArray('.method__step').forEach(function (step) {
+      ScrollTrigger.create({
+        trigger: step, start: 'top 62%', end: 'bottom 38%',
+        toggleClass: { targets: step, className: 'is-focus' }
+      });
+    });
+
+    /* ── 4 · Case studies multi-layer parallax ── */
+    gsap.utils.toArray('.case-study').forEach(function (cs) {
+      gsap.fromTo(cs.querySelector('.case__meta'), { y: 50 }, {
+        y: -50, ease: 'none',
+        scrollTrigger: { trigger: cs, start: 'top bottom', end: 'bottom top', scrub: 0.6 }
+      });
+      gsap.fromTo(cs.querySelector('.case__content'), { y: 80 }, {
+        y: -80, ease: 'none',
+        scrollTrigger: { trigger: cs, start: 'top bottom', end: 'bottom top', scrub: 0.8 }
+      });
+    });
+  });
+
+  /* ── 6 · Hero entrance (replaces the CSS transitions killed by js-anim) ──
+     Created AFTER heroTL so it wins the ticker race while it plays;
+     heroTL's from-values equal the intro's end-state, so scroll
+     handoff is seamless. immediateRender paints hidden before first frame. */
+  var introDone = false;
+  var pendingRefresh = false;
+  gsap.timeline({ delay: 0.15, onComplete: function () {
+    introDone = true;
+    if (pendingRefresh) { pendingRefresh = false; ScrollTrigger.refresh(); }
+  }}).from('.hero .reveal', {
+    y: 28, opacity: 0, duration: 1.2, ease: 'power4.out', stagger: 0.15
+  });
+
+  /* Refresh only after the intro settles — a refresh mid-intro would
+     re-render heroTL's from-state over the in-flight entrance. */
+  function safeRefresh() {
+    if (!introDone) { pendingRefresh = true; return; }
+    ScrollTrigger.refresh();
+  }
+  window.addEventListener('load', safeRefresh);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(safeRefresh); }
+})();
+</script>
 <script>
 (() => {
   /* ─────────────────────────────────────────────────
@@ -687,7 +948,7 @@ FOOTER
       }
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
-  
+
   reveals.forEach(el => revealObserver.observe(el));
 
   /* ─────────────────────────────────────────────────
@@ -698,15 +959,31 @@ FOOTER
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let ticking = false;
+  const navSections = ['approach', 'methodology', 'cases', 'capabilities', 'contact']
+    .map(id => document.getElementById(id)).filter(Boolean);
+  const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"], .nav-cta[href^="#"]'));
+
+  function updateActiveNav(y) {
+    const line = y + window.innerHeight * 0.4;
+    let current = '';
+    for (const section of navSections) {
+      if (section.offsetTop <= line) current = section.id;
+      else break;
+    }
+    navLinks.forEach(link =>
+      link.classList.toggle('is-active', link.getAttribute('href') === '#' + current));
+  }
+
   window.addEventListener('scroll', () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {
         const y = window.scrollY;
         if (y > 50) header.classList.add('scrolled');
         else header.classList.remove('scrolled');
-        
-        // Subtle parallax on hero meta
-        if (heroMeta && !reduceMotion && y < window.innerHeight) {
+        updateActiveNav(y);
+
+        // Subtle parallax on hero meta (CSS layer only — GSAP owns it under js-anim)
+        if (heroMeta && !reduceMotion && !document.documentElement.classList.contains('js-anim') && y < window.innerHeight) {
           heroMeta.style.transform = `translateY(${y * 0.3}px)`;
           heroMeta.style.opacity = Math.max(0, 1 - (y / 400));
         }
@@ -715,6 +992,8 @@ FOOTER
       ticking = true;
     }
   }, { passive: true });
+
+  updateActiveNav(window.scrollY);
 
   /* ─────────────────────────────────────────────────
   MOBILE MENU LOGIC
@@ -796,6 +1075,19 @@ FOOTER
       "case2.arch": "Digitized the Civil Registry's complex form logic and integrated real-time API sources for property valuations, economic unit rates, and tax calculations.",
       "case2.exec": "Redesigned the end-to-end workflow, automating document generation for court submissions, deeds, and appeals.",
       "case2.outcome": "Reduced processing time by 80% (60 to 15 minutes per case) and achieved 100% team adoption.",
+      "case3.tag": "Document Intelligence",
+      "case3.title": "contRAG™ Legal Document Intelligence",
+      "case3.problem": "Legal and business teams sit on vast contract, policy, and invoice archives, yet answering questions across them stays slow and manual — and generic chatbots answer from training data instead of the actual documents.",
+      "case3.arch": "A Retrieval-Augmented Generation pipeline: document ingestion, structured and unstructured extraction, vector embeddings, contextual retrieval, and grounded generation with exact citations — no answer without a traceable source.",
+      "case3.exec": "Built a functional prototype supporting semantic queries across single documents or the whole archive, side-by-side version comparison of clauses such as confidentiality, liability, and data protection, and full answer traceability.",
+      "case3.outcome": "Turned an unstructured document archive into searchable, structured intelligence — from raw contracts to cited answers in seconds.",
+      "case4.tag": "Native Legal Product",
+      "case4.title": "Legal Intaker™ Contract Intake",
+      "case4.problem": "Repetitive, low-risk contract work — turning a raw client message into an NDA — consumes time without adding strategic value, while cloud tools create external dependency over sensitive data.",
+      "case4.arch": "A native macOS application built on regex and process design: no AI, no cloud. Counterparty data is extracted locally and mirrored from the user profile; documents are generated entirely on-device.",
+      "case4.exec": "Designed a seven-step guided flow — intake, contract type suggestion with rationale, party extraction, field review checklist, terms, preview, and generation — from any email, chat, or contact-form message.",
+      "case4.outcome": "From raw message to a numbered, signable NDA in under a minute — with data that never leaves the machine.",
+      "case.link": "View on LinkedIn ↗",
       "caps.eyebrow": "Capabilities",
       "caps.title": "Structural implementation of legal technology.",
       "caps.c1.t": "AI & RAG Governance",
@@ -871,6 +1163,19 @@ FOOTER
       "case2.arch": "Digitalización de la lógica compleja del Registro Civil e integración de fuentes API en tiempo real para avalúos de propiedades, tasas de unidades económicas y cálculos de impuestos.",
       "case2.exec": "Rediseño del flujo de trabajo de extremo a extremo, automatizando la generación de documentos para presentaciones judiciales, escrituras y apelaciones.",
       "case2.outcome": "Reducción del tiempo de procesamiento en un 80% (de 60 a 15 minutos por caso) y adopción del 100% por el equipo.",
+      "case3.tag": "Inteligencia Documental",
+      "case3.title": "contRAG™ Inteligencia Documental Legal",
+      "case3.problem": "Los equipos legales y de negocio poseen enormes archivos de contratos, políticas y facturas, pero responder preguntas sobre ellos sigue siendo lento y manual — y los chatbots genéricos responden con datos de entrenamiento en lugar de con los documentos reales.",
+      "case3.arch": "Una pipeline de Generación Aumentada por Recuperación: ingesta documental, extracción estructurada y no estructurada, embeddings vectoriales, recuperación contextual y generación fundamentada con citas exactas — sin respuesta sin fuente rastreable.",
+      "case3.exec": "Prototipo funcional con consultas semánticas sobre documentos individuales o todo el archivo, comparación lado a lado de versiones de cláusulas como confidencialidad, responsabilidad y protección de datos, y trazabilidad total de cada respuesta.",
+      "case3.outcome": "Un archivo documental sin estructurar convertido en inteligencia consultable y estructurada — de contratos en bruto a respuestas citadas en segundos.",
+      "case4.tag": "Producto Legal Nativo",
+      "case4.title": "Legal Intaker™ Alta de Contratos",
+      "case4.problem": "El trabajo contractual repetitivo y de bajo riesgo — convertir un mensaje del cliente en un NDA — consume tiempo sin aportar valor estratégico, mientras que las herramientas en la nube crean dependencia externa sobre datos sensibles.",
+      "case4.arch": "Una aplicación nativa de macOS construida con regex y diseño de procesos: sin IA, sin nube. Los datos de la contraparte se extraen localmente y se reflejan desde el perfil del usuario; los documentos se generan íntegramente en el dispositivo.",
+      "case4.exec": "Diseño de un flujo guiado en siete pasos — recepción, sugerencia del tipo de contrato con justificación, extracción de partes, checklist de revisión, condiciones, vista previa y generación — desde cualquier mensaje de email, chat o formulario.",
+      "case4.outcome": "De un mensaje en bruto a un NDA numerado y firmable en menos de un minuto, con datos que nunca salen del equipo.",
+      "case.link": "Ver en LinkedIn ↗",
       "caps.eyebrow": "Capacidades",
       "caps.title": "Implementación estructural de tecnología legal.",
       "caps.c1.t": "Gobernanza de IA y RAG",
@@ -946,6 +1251,19 @@ FOOTER
       "case2.arch": "Digitalisierung der komplexen Formularlogik des Standesamtes und Integration Echtzeit-API-Quellen für Immobilienbewertungen, Wirtschaftseinheitenraten und Steuerberechnungen.",
       "case2.exec": "Neugestaltung des End-to-End-Workflows, Automatisierung der Dokumentengenerierung für Gerichtseinreichungen, Urkunden und Berufungen.",
       "case2.outcome": "Reduzierung der Bearbeitungszeit um 80 % (60 auf 15 Minuten pro Fall) und Erreichung einer 100%igen Teamakzeptanz.",
+      "case3.tag": "Dokumentenintelligenz",
+      "case3.title": "contRAG™ Rechtliche Dokumentenintelligenz",
+      "case3.problem": "Rechts- und Geschäftsteams verfügen über riesige Vertrags-, Richtlinien- und Rechnungsarchive, doch Antworten darauf bleiben langsam und manuell — und generische Chatbots antworten aus Trainingsdaten statt aus den tatsächlichen Dokumenten.",
+      "case3.arch": "Eine Retrieval-Augmented-Generation-Pipeline: Dokumentaufnahme, strukturierte und unstrukturierte Extraktion, Vektorembeddings, kontextuelles Retrieval und Generierung mit exakten Zitaten — keine Antwort ohne nachvollziehbare Quelle.",
+      "case3.exec": "Ein funktionsfähiger Prototyp mit semantischen Abfragen über einzelne Dokumente oder das gesamte Archiv, seitlichem Versionsvergleich von Klauseln wie Vertraulichkeit, Haftung und Datenschutz und lückenloser Antwortnachverfolgung.",
+      "case3.outcome": "Aus einem unstrukturierten Dokumentarchiv wurde durchsuchbare, strukturierte Intelligenz — von rohen Verträgen zu zitierten Antworten in Sekunden.",
+      "case4.tag": "Natives Rechtsprodukt",
+      "case4.title": "Legal Intaker™-Vertragserstellung",
+      "case4.problem": "Repetitive, riskoarme Vertragsarbeit — aus einer rohen Kunden Nachricht einen NDA zu machen — kostet Zeit ohne strategischen Nutzen, während Cloud-Tools externe Abhängigkeit über sensible Daten schaffen.",
+      "case4.arch": "Eine native macOS-Anwendung auf Basis von Regex und Prozessdesign: keine KI, keine Cloud. Daten der Vertragspartner werden lokal extrahiert und aus dem eigenen Profil gespiegelt; Dokumente entstehen vollständig auf dem Gerät.",
+      "case4.exec": "Ein siebenstufiger geführter Ablauf: Aufnahme, Vertragstyp-Vorschlag mit Begründung, Parteien-Extraktion, Prüfliste, Konditionen, Vorschau und Generierung — aus jeder E-Mail-, Chat- oder Formularnachricht.",
+      "case4.outcome": "Von der rohen Nachricht zum nummerierten, signierbaren NDA in unter einer Minute — mit Daten, die das Gerät nie verlassen.",
+      "case.link": "Auf LinkedIn ansehen ↗",
       "caps.eyebrow": "Fähigkeiten",
       "caps.title": "Strukturelle Implementierung von Legal Tech.",
       "caps.c1.t": "AI- & RAG-Governance",
@@ -1021,6 +1339,19 @@ FOOTER
       "case2.arch": "Оцифрована сложная логика форм ЗАГСа и интегрированы источники API в реальном времени для оценки недвижимости, ставок экономических единиц и расчета налогов.",
       "case2.exec": "Перепроектирован рабочий процесс от начала до конца, автоматизирована генерация документов для судебных подач, актов и апелляций.",
       "case2.outcome": "Сокращено время обработки на 80% (с 60 до 15 минут на дело) и достигнуто 100% принятие командой.",
+      "case3.tag": "Документальная аналитика",
+      "case3.title": "contRAG™ правовая документальная аналитика",
+      "case3.problem": "Юридические и бизнес-команды хранят огромные архивы договоров, политик и счетов, но отвечать на вопросы по ним медленно и вручную — а чат-боты отвечают из обучающих данных, а не из реальных документов.",
+      "case3.arch": "Конвейер Retrieval-Augmented Generation: загрузка документов, структурированная и неструктурированная экстракция, векторные эмбеддинги, контекстуальный поиск и генерация с точными цитатами — без ответа без источника.",
+      "case3.exec": "Функциональный прототип: семантические запросы по одному документу или всему архиву, сравнение версий документа бок о бок (конфиденциальность, ответственность, защита данных) и полная трассируемость ответов.",
+      "case3.outcome": "Неструктурированный документальный архив превращён в структурированный поисковый ресурс — от сырых договоров до ответов с цитатами за секунды.",
+      "case4.tag": "Нативный правовой продукт",
+      "case4.title": "Legal Intaker™ подготовка договоров",
+      "case4.problem": "Рутинная низкорисковая работа с договорами — превратить сырое сообщение клиента в NDA — отнимает время без стратегической ценности, а облачные инструменты создают внешнюю зависимость для чувствительных данных.",
+      "case4.arch": "Нативное приложение для macOS на regex и процессном дизайне: без ИИ, без облака. Данные контрагента извлекаются локально и зеркалятся из вашего профиля; документы создаются полностью на устройстве.",
+      "case4.exec": "Семишаговый сценарий: приём, предложение типа договора с обоснованием, извлечение сторон, чек-лист проверки, условия, предпросмотр и генерация — из любого письма, сообщения или формы.",
+      "case4.outcome": "От сырого сообщения до пронумерованного NDA, готового к подписанию, меньше минуты — данные не покидают компьютер.",
+      "case.link": "Смотреть в LinkedIn ↗",
       "caps.eyebrow": "Компетенции",
       "caps.title": "Структурная реализация юридических технологий.",
       "caps.c1.t": "Управление ИИ и RAG",
